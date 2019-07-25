@@ -11,12 +11,14 @@
 void random_mutation(single a, single &result, double Pm, int th, vector<unsigned int> &random_vector)
 /*  compute a new single */
 {
-    string codon, random_codon, new_cds = "";
+    string codon, random_codon, new_cds = "", id = "";
+    string CDS;
     int size, c=0;
     
     
-    for(string CDS : a.cds)
-    { 
+    for(int c=0; c<a.cds.size(); ++c)
+    {
+        CDS = a.cds[c]; 
         for(int i = 0; i<(int)CDS.size(); i+=3)
         {
             codon = CDS.substr(i,3);
@@ -36,12 +38,17 @@ void random_mutation(single a, single &result, double Pm, int th, vector<unsigne
         c++;
     }
     
-    result.objetives[0] = (mCAI(result.cds).value);
-    result.objetives[1] = (mHD(result.cds).value);
-    result.objetives[2] = (mlrcs(result.cds).value);
+    result.objetives.push_back(mCAI(result.cds).value);
+    id += to_string(result.objetives[0]);
+    result.objetives.push_back(mHD(result.cds).value);
+    id += to_string(result.objetives[1]);
+    result.objetives.push_back(mlrcs(result.cds).value);
+    id += to_string(result.objetives[2]);
+    result.id = id;
     result.fitness = 0;
     result.age = 0;
     result.gender = a.gender;
+
 
     return;
 }
@@ -49,7 +56,7 @@ void random_mutation(single a, single &result, double Pm, int th, vector<unsigne
 void cai_mutation(single a, single &result, double Pm, int th, vector<unsigned int> &random_vector)
 /*  primera mutación avariciosa */
 {
-    string codon, random_codon, new_cds = "", CDS = mCAI(a.cds).cds1;
+    string codon, random_codon, new_cds = "", CDS = mCAI(a.cds).cds1, id = "";
     vector<string> new_vector;
 
     for(int i = 0; i<(int)CDS.size(); i+=3)
@@ -68,19 +75,24 @@ void cai_mutation(single a, single &result, double Pm, int th, vector<unsigned i
 
     update_CDSs(a.cds, new_cds, CDS, new_vector);
     result.cds = new_vector;
-    result.objetives[0] = (mCAI(result.cds).value);
-    result.objetives[1] = (mHD(result.cds).value);
-    result.objetives[2] = (mlrcs(result.cds).value);
+    result.objetives.push_back(mCAI(result.cds).value);
+    id += to_string(result.objetives[0]);
+    result.objetives.push_back(mHD(result.cds).value);
+    id += to_string(result.objetives[1]);
+    result.objetives.push_back(mlrcs(result.cds).value);
+    id += to_string(result.objetives[2]);
+    result.id = id;
     result.fitness = 0;
     result.age = 0;
     result.gender = a.gender;
+    new_vector.clear();
 
     return;
 }
 
 void undue_cai_mutation(single a, single &result, double Pm, int th, vector<unsigned int> &random_vector)
 {
-    string codon, random_codon, new_cds = "", CDS = mCAI(a.cds).cds1;
+    string codon, random_codon, new_cds = "", CDS = mCAI(a.cds).cds1, id = "";
     vector<string> new_vector;
 
     for(int i = 0; i<(int)CDS.size(); i+=3)
@@ -99,12 +111,17 @@ void undue_cai_mutation(single a, single &result, double Pm, int th, vector<unsi
 
     update_CDSs(a.cds, new_cds, CDS, new_vector);
     result.cds = new_vector;
-    result.objetives[0] = (mCAI(result.cds).value);
-    result.objetives[1] = (mHD(result.cds).value);
-    result.objetives[2] = (mlrcs(result.cds).value);
+    result.objetives.push_back(mCAI(result.cds).value);
+    id += to_string(result.objetives[0]);
+    result.objetives.push_back(mHD(result.cds).value);
+    id += to_string(result.objetives[1]);
+    result.objetives.push_back(mlrcs(result.cds).value);
+    id += to_string(result.objetives[2]);
+    result.id = id;
     result.fitness = 0;
     result.age = 0;
     result.gender = a.gender;
+    new_vector.clear();
 
     return;
 }
@@ -114,7 +131,7 @@ void mhd_mutation(single a, single &result, double Pm, int th, vector<unsigned i
 {
     result.cds = a.cds;
     aim aim = mHD(a.cds);
-    string codon, best_codon, new_CDS1;
+    string codon, best_codon, new_CDS1, id = "";
     double curr_HD, curr_mHD=aim.value, best_HD=-1, best_mHD=-1, new_HD, new_mHD;
     vector<string> new_vector;
 
@@ -152,12 +169,17 @@ void mhd_mutation(single a, single &result, double Pm, int th, vector<unsigned i
 
     }
 
-    result.objetives[0] = (mCAI(result.cds).value);
-    result.objetives[1] = (mHD(result.cds).value);
-    result.objetives[2] = (mlrcs(result.cds).value);
+    result.objetives.push_back(mCAI(result.cds).value);
+    id += to_string(result.objetives[0]);
+    result.objetives.push_back(mHD(result.cds).value);
+    id += to_string(result.objetives[1]);
+    result.objetives.push_back(mlrcs(result.cds).value);
+    id += to_string(result.objetives[2]);
+    result.id = id;
     result.fitness = 0;
     result.age = 0;  
     result.gender = a.gender;
+    new_vector.clear();
 
     return;
 }
@@ -166,7 +188,7 @@ void lrcs_mutation(single a, single &result, double Pm, int th, vector<unsigned 
 /*  tercera mutación avariciosa */
 {
     aim curr_lrcs = mlrcs(a.cds), new_lrcs;
-    string codon, random_codon, new_cds, cds1, cds2, cds3, CDS;
+    string codon, random_codon, new_cds, cds1, cds2, cds3, CDS, id = "";
     vector<string> new_vector;
     result.cds = a.cds;
     int ret, index;
@@ -174,14 +196,14 @@ void lrcs_mutation(single a, single &result, double Pm, int th, vector<unsigned 
     for(char &character: curr_lrcs.cds1) cds1 += toupper(character);
     for(char &character: curr_lrcs.cds2) cds2 += toupper(character);  
     for(char &character: curr_lrcs.cds3) cds3 += toupper(character);   
-
-    ret = ((curr_lrcs.index!=0) ? a.cds[0].length()%curr_lrcs.index : 0)%3;
-    CDS = (curr_lrcs.index>=a.cds[0].length()) ? cds3 : cds2;
-    index = (curr_lrcs.index>=a.cds[0].length()) ? curr_lrcs.index-(a.cds[0].length()) : curr_lrcs.index;
-
+    
     for(int i = 0; i<(int)curr_lrcs.cds1.size(); i+=3)
     {   
-        codon = (ret!=0) ? CDS.substr((index+i-ret),3) : cds1.substr(i,3);
+        ret = ((curr_lrcs.index!=0) ? a.cds[0].length()%curr_lrcs.index : 0)%3;
+        CDS = (curr_lrcs.index>=a.cds[0].length()) ? cds3 : cds2;
+        index = (curr_lrcs.index>=a.cds[0].length()) ? curr_lrcs.index-(a.cds[0].length()) : curr_lrcs.index;
+        codon = (ret!=0) ? CDS.substr((index+i-ret),3) : CDS.substr((index+i),3);
+
 
         if(rand_r(&random_vector[th]) % 100 + 1 < Pm && amino_codons[which_amino[codon]].size() > 1)
         {
@@ -197,22 +219,26 @@ void lrcs_mutation(single a, single &result, double Pm, int th, vector<unsigned 
                     if(new_lrcs.value < curr_lrcs.value)
                     {
                         result.cds = new_vector;
-                        curr_lrcs.value = new_lrcs.value;    
+                        curr_lrcs = new_lrcs;   
                     }
                 }
             }
         }
 
     }
-
- 
-    result.objetives[0] = (mCAI(result.cds).value);
-    result.objetives[1] = (mHD(result.cds).value);
-    result.objetives[2] = (mlrcs(result.cds).value);
+    
+    result.objetives.push_back(mCAI(result.cds).value);
+    id += to_string(result.objetives[0]);
+    result.objetives.push_back(mHD(result.cds).value);
+    id += to_string(result.objetives[1]);
+    result.objetives.push_back(mlrcs(result.cds).value);
+    id += to_string(result.objetives[2]);
+    result.id = id;
     result.fitness = 0;
     result.age = 0;
     result.gender = a.gender;
-
+    new_vector.clear();
+    
     return;
 }
 

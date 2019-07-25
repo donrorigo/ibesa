@@ -24,6 +24,7 @@ aim mlrs(vector<string> cds)
             max = l;     
             result.cds1 = cdsmaxlrs.maxsubstring;
             result.cds2 = cds[i];
+            result.cds3 = "";
             result.index = cdsmaxlrs.index;
         }
     }
@@ -66,6 +67,7 @@ aim mlrcs(vector<string> cds)
     if(mlr.value > max){
         max = mlr.value;
         result.cds1 = mlr.cds1;
+        cout << "MISMA CADENA!" << endl;
     } 
 
     result.value = max/l;

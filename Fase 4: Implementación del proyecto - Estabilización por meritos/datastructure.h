@@ -17,6 +17,7 @@ typedef struct single_st{
     vector<double> objetives; /* [0] = HD, [1] = CAI, [2] = LRCS */
     double fitness;
     int age;
+    string id;
 } single; /* estructura de cada individuo */
 
 typedef struct range_st{
