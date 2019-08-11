@@ -10,7 +10,6 @@ extern map<string, double> amino_weights;
 extern map<char, vector<string> > amino_codons;
 extern map <string, char> which_amino;
 
-
 typedef struct single_st{
     bool gender;
     vector<string> cds;

@@ -19,6 +19,7 @@ aim mlrs(vector<string> cds)
     CDSmaxLRS cdsmaxlrs;
  
     for(int i=0; i < (int)cds.size(); ++i) {
+        #pragma omp critical
         cdsmaxlrs = lrs(cds[i]); 
         if((l = cdsmaxlrs.maxsubstring.length()) > max){
             max = l;     

@@ -18,8 +18,6 @@
 */
 #include "lcs.h"
 
-using namespace std;
-
 bool cmpSort(LCP i, LCP j) {
     return i.lcp > j.lcp;
 }
@@ -54,53 +52,58 @@ LCP *createLCP(std::string& s, int *SA) {
     return lcp;
 }
 
-struct CDSmaxLCS lcs(std::string str1, std::string str2) {
-
-
+struct CDSmaxLCS findLCS(std::string str1, std::string str2) {
     std::string str = str1 + '#' + str2, res;
-
     struct CDSmaxLCS maxLCS;
-    int n = str.size(), *s = new int[n + 3], *SA = new int[n + 3], hash_pos = str1.size();
+    int n = str.size(),
+        *s = new int[n + 3],
+        *SA = new int[n + 3],
+        hash_pos = str1.size();
 
-    // LLenado de ceros en s y SA
     memset(s, 0, (n + 3) * sizeof(int));
     memset(SA, 0, (n + 3) * sizeof(int));
 
-    // Inicialización de s con los enteros de cada caracter de la concatenación de las dos cadenas. --> asignamos un 0 a #; por eso la suma de una unidad
     for(int i = 0; i < n; i++) {
-      s[i] = str.at(i) == '#' ? 0 : (str.at(i) - 'a' + 1);
+        s[i] = str.at(i) == '#' ? 0 : (str.at(i) - 'a' + 1);
     }
 
     suffixArray(s, SA, n, 27);
 
-
     LCP *lcp = createLCP(str, SA);
     std::sort(lcp, lcp + n, cmpSort);
 
-  int i;
-  for(i = 0; i < n; i++) 
-    if ((SA[lcp[i].sa_pos] < hash_pos && SA[lcp[i].sa_pos - 1] > hash_pos) || (SA[lcp[i].sa_pos] > hash_pos && SA[lcp[i].sa_pos - 1] < hash_pos)) 
-      break;
-      
-  
+    int i;
+    for(i = 0; i < n; i++) {
+        if ((SA[lcp[i].sa_pos] < hash_pos && SA[lcp[i].sa_pos - 1] > hash_pos) || (SA[lcp[i].sa_pos] > hash_pos && SA[lcp[i].sa_pos - 1] < hash_pos)) {
+            break;
+        }
+    }
     //std::cout << "index start" << lcp[i].sa_pos/8<<'\n';
 
-  if (i < n) {
-    for(int j = 0; j < lcp[i].lcp; j++) {
-      res += str[SA[lcp[i].sa_pos] + j];
+    if (i < n) {
+        for(int j = 0; j < lcp[i].lcp; j++) {
+            res += str[SA[lcp[i].sa_pos] + j];
+        }
+
+        maxLCS.index=SA[lcp[i].sa_pos];
+        maxLCS.maxsubstring=res;
+//        std::cout << "str: " <<str<< "    ///   res  "<<res<<'\n';
+//        std::cout << "lcp["<<i<<"].lcp " << lcp[i].lcp<<'\n';
+//        std::cout << "lcp["<<i<<"].sa_pos " << SA[lcp[i].sa_pos]<<'\n';
     }
 
-    maxLCS.index=SA[lcp[i].sa_pos];
-    maxLCS.maxsubstring=res;
-      //std::cout << "str: " <<str<< "    ///   res  "<<res<<'\n';
-      //std::cout << "lcp["<<i<<"].lcp " << lcp[i].lcp<<'\n';
-      //std::cout << "lcp["<<i<<"].sa_pos " << SA[lcp[i].sa_pos]<<'\n';
-  }
+    delete [] lcp;
+    delete [] SA;
+    delete [] s;
+    return maxLCS;
+}
 
-  delete [] lcp;
-  delete [] SA;
-  delete [] s;
-  return maxLCS;
+struct CDSmaxLCS lcs(std::string cds_1, std::string cds_2) {
+
+    struct CDSmaxLCS Mlcs;
+    // search lcs for n-th string and previously found lcs
+    Mlcs = findLCS(cds_1, cds_2);
+    return Mlcs;
 }
 
 /*
@@ -133,7 +136,6 @@ static void radixPass(int* a, int* b, int* r, int n, int K){
   delete [] c;
 }
 
-
 // find the suffix array SA of s[0..n-1] in {1..K}^n
 // require s[n]=s[n+1]=s[n+2]=0, n>=2
 void suffixArray(int* s, int* SA, int n, int K) {
@@ -147,14 +149,11 @@ void suffixArray(int* s, int* SA, int n, int K) {
   // the "+(n0-n1)" adds a dummy mod 1 suffix if n%3 == 1
   for (int i=0, j=0;  i < n+(n0-n1);  i++) if (i%3 != 0) s12[j++] = i;
 
-
-
   // lsb radix sort the mod 1 and mod 2 triples
   radixPass(s12 , SA12, s+2, n02, K);
   radixPass(SA12, s12 , s+1, n02, K);
   radixPass(s12 , SA12, s  , n02, K);
 
-  
   // find lexicographic names of triples
   int name = 0, c0 = -1, c1 = -1, c2 = -1;
   for (int i = 0;  i < n02;  i++) {

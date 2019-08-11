@@ -1,6 +1,5 @@
 #ifndef LRS_H
 #define LRS_H
-
 #include <cstdio>
 #include <cstring>
 #include <string>
