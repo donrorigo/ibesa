@@ -5,7 +5,33 @@
 
 typedef struct SuffixTreeNode Node;
 
-Node *newNode(int start, int *end, Node *root)
+char text[4000]; //Input string
+Node *root = NULL; //Pointer to root node
+
+/*lastNewNode will point to newly created internal node,
+  waiting for it's suffix link to be set, which might get
+  a new suffix link (other than root) in next extension of
+  same phase. lastNewNode will be set to NULL when last
+  newly created internal node (if there is any) got it's
+  suffix link reset to new internal node created in next
+  extension of same phase. */
+Node *lastNewNode = NULL;
+Node *activeNode = NULL;
+
+/*activeEdge is represeted as input string character
+  index (not the character itself)*/
+int activeEdge = -1;
+int activeLength = 0;
+
+// remainingSuffixCount tells how many suffixes yet to
+// be added in tree
+int remainingSuffixCount = 0;
+int leafEnd = -1;
+int *rootEnd = NULL;
+int *splitEnd = NULL;
+int size = -1; //Length of input string
+
+Node *newNode(int start, int *end)
 {
     Node *node =(Node*) malloc(sizeof(Node));
     int i;
@@ -27,30 +53,30 @@ Node *newNode(int start, int *end, Node *root)
     return node;
 }
 
-int edgeLength(Node *n, Node *root) {
+int edgeLength(Node *n) {
     if(n == root)
         return 0;
     return *(n->end) - (n->start) + 1;
 }
 
-int walkDown(Node *currNode, Node *root, Node *activeNode, int &activeEdge, int &activeLength)
+int walkDown(Node *currNode)
 {
     /*activePoint change for walk down (APCFWD) using
      Skip/Count Trick  (Trick 1). If activeLength is greater
      than current edge length, set next  internal node as
      activeNode and adjust activeEdge and activeLength
      accordingly to represent same activePoint*/
-    if (activeLength >= edgeLength(currNode, root))
+    if (activeLength >= edgeLength(currNode))
     {
-        activeEdge += edgeLength(currNode, root);
-        activeLength -= edgeLength(currNode, root);
+        activeEdge += edgeLength(currNode);
+        activeLength -= edgeLength(currNode);
         activeNode = currNode;
         return 1;
     }
     return 0;
 }
 
-void extendSuffixTree(int &pos, char text[], Node *root, Node *lastNewNode, Node *activeNode, int &activeEdge, int &activeLength, int &remainingSuffixCount, int &leafEnd, int *splitEnd){
+void extendSuffixTree(int pos){
     /*Extension Rule 1, this takes care of extending all
     leaves created so far in tree*/
     leafEnd = pos;
@@ -77,7 +103,7 @@ void extendSuffixTree(int &pos, char text[], Node *root, Node *lastNewNode, Node
         {
             //Extension Rule 2 (A new leaf edge gets created)
             activeNode->children[text[activeEdge]] =
-                                          newNode(pos, &leafEnd, root);
+                                          newNode(pos, &leafEnd);
 
             /*A new leaf edge is created in above line starting
              from  an existng node (the current activeNode), and
@@ -99,7 +125,7 @@ void extendSuffixTree(int &pos, char text[], Node *root, Node *lastNewNode, Node
             // Get the next node at the end of edge starting
             // with activeEdge
             Node *next = activeNode->children[text[activeEdge]];
-            if (walkDown(next, root, activeNode, activeEdge, activeLength))//Do walkdown
+            if (walkDown(next))//Do walkdown
             {
                 //Start from next node (the new activeNode)
                 continue;
@@ -135,11 +161,11 @@ void extendSuffixTree(int &pos, char text[], Node *root, Node *lastNewNode, Node
             *splitEnd = next->start + activeLength - 1;
 
             //New internal node
-            Node *split = newNode(next->start, splitEnd, root);
+            Node *split = newNode(next->start, splitEnd);
             activeNode->children[text[activeEdge]] = split;
 
             //New leaf coming out of new internal node
-            split->children[text[pos]] = newNode(pos, &leafEnd, root);
+            split->children[text[pos]] = newNode(pos, &leafEnd);
             next->start += activeLength;
             split->children[text[next->start]] = next;
 
@@ -180,11 +206,16 @@ void extendSuffixTree(int &pos, char text[], Node *root, Node *lastNewNode, Node
     }
 }
 
+void print(int i, int j){
+    int k;
+    for (k=i; k<=j; k++)
+        printf("%c", text[k]);
+}
+
 //Print the suffix tree as well along with setting suffix index
 //So tree will be printed in DFS manner
 //Each edge along with it's suffix index will be printed
-void setSuffixIndexByDFS(Node *n, int labelHeight, char text[], Node *root, Node *lastNewNode, Node *activeNode, int &activeEdge, int &activeLength, 
-int &remainingSuffixCount, int &leafEnd, int *rootEnd, int *splitEnd, int &size){
+void setSuffixIndexByDFS(Node *n, int labelHeight){
     if (n == NULL)  return;
 
     if (n->start != -1) //A non-root node
@@ -207,7 +238,7 @@ int &remainingSuffixCount, int &leafEnd, int *rootEnd, int *splitEnd, int &size)
             //edges from it.
             leaf = 0;
             setSuffixIndexByDFS(n->children[i], labelHeight +
-                                  edgeLength(n->children[i], root), text, root, lastNewNode, activeNode, activeEdge, activeLength, remainingSuffixCount, leafEnd, rootEnd, splitEnd, size);
+                                  edgeLength(n->children[i]));
         }
     }
     if (leaf == 1)
@@ -234,8 +265,28 @@ void freeSuffixTreeByPostOrder(Node *n){
     free(n);
 }
 
+/*Build the suffix tree and print the edge labels along with
+suffixIndex. suffixIndex for leaf edges will be >= 0 and
+for non-leaf edges will be -1*/
+void buildSuffixTree(){
+    size = std :: strlen(text);
+    int i;
+    rootEnd = (int*) malloc(sizeof(int));
+    *rootEnd = - 1;
+
+    /*Root is a special node with start and end indices as -1,
+    as it has no parent from where an edge comes to root*/
+    root = newNode(-1, rootEnd);
+
+    activeNode = root; //First activeNode will be root
+    for (i=0; i<size; i++)
+        extendSuffixTree(i);
+    int labelHeight = 0;
+    setSuffixIndexByDFS(root, labelHeight);
+}
+
 void doTraversal(Node *n, int labelHeight, int* maxHeight,
-int* substringStartIndex,  Node *root){
+int* substringStartIndex){
     if(n == NULL)
     {
         return;
@@ -248,27 +299,27 @@ int* substringStartIndex,  Node *root){
             if(n->children[i] != NULL)
             {
                 doTraversal(n->children[i], labelHeight +
-                                edgeLength(n->children[i], root), maxHeight,
-                                 substringStartIndex, root);
+                                edgeLength(n->children[i]), maxHeight,
+                                 substringStartIndex);
             }
         }
     }
     else if(n->suffixIndex > -1 &&
-                (*maxHeight < labelHeight - edgeLength(n, root)))
+                (*maxHeight < labelHeight - edgeLength(n)))
     {
-        *maxHeight = labelHeight - edgeLength(n, root);
+        *maxHeight = labelHeight - edgeLength(n);
         *substringStartIndex = n->suffixIndex;
 
     }
 }
 
 //substringStartIndex contiene el indice donde comienza el substring
-struct CDSmaxLRS getLongestRepeatedSubstring(char text[], Node *root){
+struct CDSmaxLRS getLongestRepeatedSubstring(void){
     int maxHeight = 0;
     int substringStartIndex = 0;
     struct CDSmaxLRS maxLRS;
 
-    doTraversal(root, 0, &maxHeight, &substringStartIndex, root);
+    doTraversal(root, 0, &maxHeight, &substringStartIndex);
     std::string cadena;
     cadena="";
     // printf("maxHeight %d, substringStartIndex %d\n", maxHeight,
@@ -290,67 +341,17 @@ struct CDSmaxLRS getLongestRepeatedSubstring(char text[], Node *root){
     return maxLRS;
 }
 
-
-/*Build the suffix tree and print the edge labels along with
-suffixIndex. suffixIndex for leaf edges will be >= 0 and
-for non-leaf edges will be -1*/
-void buildSuffixTree(char text[], Node *root, Node *lastNewNode, Node *activeNode, int &activeEdge, int &activeLength, int &remainingSuffixCount, int &leafEnd, int *rootEnd, int *splitEnd, int &size){
-    
-    size = std :: strlen(text);
-    int i;
-    rootEnd = (int*) malloc(sizeof(int));
-    *rootEnd = - 1;
-
-    /*Root is a special node with start and end indices as -1,
-    as it has no parent from where an edge comes to root*/
-    root = newNode(-1, rootEnd, root);
-
-    activeNode = root; //First activeNode will be root
-    for (i=0; i<size; i++)
-        extendSuffixTree(i, text, root, lastNewNode, activeNode, activeEdge, activeLength, remainingSuffixCount, leafEnd, splitEnd);
-    int labelHeight = 0;
-    setSuffixIndexByDFS(root, labelHeight, text, root, lastNewNode, activeNode, activeEdge, activeLength, remainingSuffixCount, leafEnd, rootEnd, splitEnd, size);
-}
-
-
 struct CDSmaxLRS lrs (std::string cadena){
 
-    cadena =cadena+"$";
-    struct CDSmaxLRS Mlrs;
-    char text[4000]; //Input string
-    std :: strcpy(text, cadena.c_str());
+  cadena =cadena+"$";
+  struct CDSmaxLRS Mlrs;
+  std :: strcpy(text, cadena.c_str());
+  buildSuffixTree();
+  Mlrs=getLongestRepeatedSubstring();
+  //Free the dynamically allocated memory
+  freeSuffixTreeByPostOrder(root);
 
-    Node *root = NULL; //Pointer to root node
-
-    /*lastNewNode will point to newly created internal node,
-    waiting for it's suffix link to be set, which might get
-    a new suffix link (other than root) in next extension of
-    same phase. lastNewNode will be set to NULL when last
-    newly created internal node (if there is any) got it's
-    suffix link reset to new internal node created in next
-    extension of same phase. */
-    Node *lastNewNode = NULL;
-    Node *activeNode = NULL;
-
-    /*activeEdge is represeted as input string character
-    index (not the character itself)*/
-    int activeEdge = -1;
-    int activeLength = 0;
-
-    // remainingSuffixCount tells how many suffixes yet to
-    // be added in tree
-    int remainingSuffixCount = 0;
-    int leafEnd = -1;
-    int *rootEnd = NULL;
-    int *splitEnd = NULL;
-    int size = -1; //Length of input string
-
-    buildSuffixTree(text, root, lastNewNode, activeNode, activeEdge, activeLength, remainingSuffixCount, leafEnd, rootEnd, splitEnd, size);
-    Mlrs=getLongestRepeatedSubstring(text, root);
-    //Free the dynamically allocated memory
-    freeSuffixTreeByPostOrder(root);
-
-    return Mlrs;
+  return Mlrs;
 }
 
 // driver program to test above functions
