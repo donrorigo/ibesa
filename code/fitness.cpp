@@ -7,7 +7,7 @@
     Fuente: Art. de Eckart Zitzler and Simon Künzli - Indicator-Based Selection in Multiobjective Search
 */
 
-int dominates(single a, single b)
+int dominates(single &a, single &b)
 /* Routine for usual non-domination checking. It will return the following values:
    1 if a dominates b
    -1 if b dominates a

@@ -10,13 +10,13 @@ extern map<string, double> amino_weights;
 extern map<char, vector<string> > amino_codons;
 extern map <string, char> which_amino;
 
-
 typedef struct single_st{
     bool gender;
     vector<string> cds;
     vector<double> objetives; /* [0] = HD, [1] = CAI, [2] = LRCS */
     double fitness;
     int age;
+    string id;
 } single; /* estructura de cada individuo */
 
 typedef struct range_st{
