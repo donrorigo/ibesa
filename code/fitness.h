@@ -7,7 +7,7 @@
 #define KAPPA 0.05 /* variable de escala */ 
 #define RHO 1.1 /* variable auxiliar de hioervolumen */
 
-int dominates(single a, single b);
+int dominates(single &a, single &b);
 void compute_fitness(vector<single>  &population,vector<vector<double> > &indicators, vector<range> &bounds); 
 static void compute_fitnesscomponents(vector<single>  &population, vector<vector<double> > &indicators, vector<range> &bounds); 
 static void compute_bounds(vector<single>  &population, vector<range> &bounds); 
