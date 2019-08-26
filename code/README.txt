@@ -12,6 +12,7 @@ Compilación:
 
 Ejecución: 
     * Para generar el fichero con toda la información de los elefantes: main.sh
-    * Los resultados se tienen que convertir a formato de hypervolume: ./convert (japoneses) / ./IBESA convert to HYPERVOLUME --> file
-    * Despues se debe normalizar: ./normalize file.txt proteins.txt (1=japoneses / 0=ibesa)
-    * Convertir a decimal el valor: convert2decimal
+    * Los resultados se tienen que convertir a formato de hypervolume: ./IBESA convert to HYPERVOLUME [file]
+    * Despues se debe normalizar: ./normalize RESULTADOS\:\ [code of protein] [code of protein]
+    * Calcular hipervolumen: ./hyp_ind hyp_ind_param.txt NORMALIZADO\:\ [code of protein] notnecessaryfile.txt results.txt
+    * Convertir a decimal el valor: ./convert2decimal results.txt
