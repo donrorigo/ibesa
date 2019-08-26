@@ -406,17 +406,17 @@ int main(int argc, char const *argv[])
         {
             std::copy(population.begin(), population.end(), std::back_inserter(solutions));
             create_superCAI(total_cds, aminoacids);
-            population.clear();
-            indicators.resize(solutions.size());
+            // population.clear();
+            // indicators.resize(solutions.size());
         }
 
-        #pragma omp for schedule(guided)
-        for(int i=0; i<solutions.size(); ++i) indicators[i].resize(solutions.size());   
-        compute_fitness(solutions, indicators, bounds);    
+        // #pragma omp for schedule(guided)
+        // for(int i=0; i<solutions.size(); ++i) indicators[i].resize(solutions.size());   
+        // compute_fitness(solutions, indicators, bounds);    
         
     }
 
-    sorting_population(solutions);
+    //sorting_population(solutions);
     write_results(argv[4]);
     cout << "[!] Proteína " << argv[4] << " terminada.\n" << endl; 
 
