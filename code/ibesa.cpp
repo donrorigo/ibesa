@@ -303,6 +303,8 @@ int main(int argc, char const *argv[])
         5. secuencia de aminoácidos
         6. numero de CDSs a generar*/
 {
+    cout << "[!] Proteína " << argv[4] << " iniciada." << endl; 
+
     /* definición de variables e inicialización */
     int j, i=0;
     int poblacion = atoi(argv[1]), epochs = atoi(argv[2]), machos = atoi(argv[3]);
@@ -416,6 +418,7 @@ int main(int argc, char const *argv[])
 
     sorting_population(solutions);
     write_results(argv[4]);
-    
+    cout << "[!] Proteína " << argv[4] << " terminada.\n" << endl; 
+
     return 0;
 }
