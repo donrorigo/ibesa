@@ -139,7 +139,7 @@ void create_superCAI(int numC, string sequence)
     result.fitness = 0;
     result.age = 0;
     result.gender = true; 
-    population.push_back(result);
+    solutions.push_back(result);
 
     return;
 }
@@ -153,9 +153,8 @@ void init(int total, string amino_sequence, int CDSs, int machos)
 {
     int random_codon;
     string id;
-    create_superCAI(CDSs,amino_sequence);
-
-    for(int i=1; i < total*2; ++i) // numero de individuos de la población 
+    
+    for(int i=0; i < total*2; ++i) // numero de individuos de la población 
     {          
         single individuo;
         id = "";
@@ -181,7 +180,7 @@ void init(int total, string amino_sequence, int CDSs, int machos)
         individuo.age = 0;
         individuo.gender = (i < machos) ? true : false; 
         population.push_back(individuo);
-        
+        fitness_vector.insert(id);
     }
 
     
@@ -191,31 +190,42 @@ void init(int total, string amino_sequence, int CDSs, int machos)
 void stabilize_population()
 /* permite la no estancación del algoritmo cambiando el sexo de los elefantes */
 {
-
+    #pragma omp for schedule(guided)  
     for(size_t e=0; e<population.size(); ++e){
         
-        if(population[e].objetives[0] > 0.65 && population[e].objetives[0] < 0.9 && fitness_vector.find((population[e].id))==fitness_vector.end()){
-            //solutions.push_back(population[e]);
-            //fitness_vector.insert(value);
-            cout << "entré! CAI" << "objetivos: " << population[e].id << endl;
+        if(population[e].objetives[0] > 0.65)
+        {
+            #pragma omp critical
+            if(solutions_vector.find(population[e].id)==solutions_vector.end())
+            {
+                solutions_vector.insert(population[e].id);
+                solutions.push_back(population[e]);
+                
+            }    
         } 
-        else if(population[e].objetives[1] > 0.22 && fitness_vector.find((population[e].id))==fitness_vector.end())
+        else if(population[e].objetives[1] >= 0.22)
         {
-            //fitness_vector.insert(value);
-            //solutions.push_back(population[e]);
-            cout << "entré! MHD" << "objetivos: " << population[e].id << endl;
+            #pragma omp critical
+            if(solutions_vector.find(population[e].id)==solutions_vector.end())
+            {
+                solutions_vector.insert(population[e].id);
+                solutions.push_back(population[e]);
+            }                
         }
-        else if(population[e].objetives[0] < 0.10 && fitness_vector.find((population[e].id))==fitness_vector.end())
+        else if(population[e].objetives[0] <= 0.13)
         {
-            //fitness_vector.insert(value);
-            //solutions.push_back(population[e]);
-            cout << "entré! LRCS" << "objetivos: " << population[e].id << endl;
+            #pragma omp critical
+            if(solutions_vector.find(population[e].id)==solutions_vector.end())
+            {
+                solutions_vector.insert(population[e].id);
+                solutions.push_back(population[e]);
+            }                
         } 
     }
 }
 
 void show_cdss(vector<string> CDSs)
-/*  Muestra por consola todos los CDS pasados por parámetro */
+/*  muestra por consola todos los CDS pasados por parámetro */
 {
     for(int i=0; i<(int)CDSs.size(); ++i)
         std::cout << "CDS" << i << ": " << CDSs[i] << "\n\n";
@@ -233,7 +243,7 @@ void write_results(string code)
 
     for(single solution : solutions)
     {   
-        if(i==100) break;
+        //if(i==100) break;
 
         j=0;
         fs << "individual" << i << " mCAI=" << solution.objetives[0] << ",mHD=" <<  solution.objetives[1] 
@@ -264,11 +274,10 @@ void show_single(single a)
 void show_population()
 /* muestra por consola toda la información de la población entera */
 {
-
     int i=0, j;
     single result;
 
-    for(int n = 0; n<population.size(); ++n)
+    for(int n = 0; n < population.size(); ++n)
     {   
         result = population[n];
         j=0;
@@ -297,7 +306,8 @@ int main(int argc, char const *argv[])
     /* definición de variables e inicialización */
     int j, i=0;
     int poblacion = atoi(argv[1]), epochs = atoi(argv[2]), machos = atoi(argv[3]);
-    greedy_mutations = {cai_mutation, mhd_mutation, lrcs_mutation, undue_cai_mutation};
+    greedy_mutations = {lrcs_mutation, mhd_mutation, cai_mutation};
+    optimum_mutations = {undue_cai_mutation, undue_mhd_mutation, undue_lrcs_mutation};
     unsigned int seed = time(NULL); 
     int id_th, hilos = omp_get_max_threads();
     int total_cds = stoi(argv[6]);
@@ -309,60 +319,75 @@ int main(int argc, char const *argv[])
     indicators.reserve(poblacion*2);
     for(int i=0; i<poblacion*2; ++i) indicators[i].reserve(poblacion*2);       
     random_vector.reserve(hilos);
-    int len = 3 * aminoacids.length();
+    auxiliar_cdss.resize(hilos);
     for(int th=0; th<hilos; ++th) random_vector[th] = seed+th;
 
     /* inicialización de la población */
     init(poblacion, aminoacids, total_cds, machos);
 
-    auxiliar_cdss.resize(hilos);
+    /* inicialización del vector auxiliar */
     for(int th = 0; th < hilos; ++th) auxiliar_cdss[th] = population[0].cds;
 
     #pragma omp parallel private(id_th)
     {   
-        id_th = omp_get_thread_num();     
-
+        id_th = omp_get_thread_num();
         while(i < epochs)
         {
             #pragma omp single
-            cout << "Epoca: " << i << endl;
-            
-            #pragma omp single
-            cout << "[!] Mutaciones." << endl;
-            
-            #pragma omp for schedule(guided)  
+            cout << "[!] Generación: " << i  << endl;
+
+            #pragma omp for schedule(guided)   
             for(j=0; j<poblacion;j++)
             {
-                // (population[j].gender) ? random_mutation(population[j], population[j+poblacion], 60, id_th, random_vector, auxiliar_cdss) : 
-                // greedy_mutations[rand_r(&random_vector[id_th])%2](population[j], population[j+poblacion], 83, id_th, random_vector, auxiliar_cdss);
-                cai_mutation(population[j], population[j+poblacion], 83, id_th, random_vector, auxiliar_cdss);
-                if(dominates(population[j+poblacion], population[j]) == -1) population[j].age = 0;
-                else population[j].age++;
-            } 
-
-            #pragma omp single
-            cout << "[!] Control de elefantes mayores." << endl;
-            
-            #pragma omp single
-            for(j=0; j<poblacion; ++j){
-                if(population[j].age == OLD){
-                    if(fitness_vector.find((population[j].id))==fitness_vector.end())
+                /* nos libramos de convergencia a una única solución */
+                #pragma omp critical
+                {   
+                    alive_vector.insert(population[j].id);
+                    if(alive_vector.find(population[j].id)==alive_vector.end()) alive_vector.insert(population[j].id);
+                    else
                     {
-                        cout << "Entre! Elefante mayor!" << "objetivos: " << population[j].id << endl;
-                        cout << "Elefante tiene estos objetivos: " << population[j].objetives.size() << endl;
-                        //solutions.push_back(population[j]);
-                        //fitness_vector.insert(value);
-                    }
-                    
-                } 
-            }
+                        population[j].gender = true; 
+                        fitness_vector.insert(population[j].id); 
+                    } 
+                }
 
-            #pragma omp single
-            cout << "[!] Criba de elefantes mayores-" << endl;
-
-            #pragma omp single
-            cout << "[!] Tamaño del vector de objetivos: " << fitness_vector.size() << endl;
+                /* mutaciones */
+                (population[j].gender) ? random_mutation(population[j], population[j+poblacion], rand_r(&random_vector[id_th])%80+1, id_th, random_vector, auxiliar_cdss) : 
+                greedy_mutations[rand_r(&random_vector[id_th])%5](population[j], population[j+poblacion], rand_r(&random_vector[id_th])%70+1, id_th, random_vector, auxiliar_cdss);
+                
+                /* aumento de edad */
+                if(dominates(population[j+poblacion], population[j]) == -1) population[j].age++;  
+                if(population[j].objetives[0] > 0.46 && population[j].objetives[1] > 0.16 && population[j].objetives[2] < 0.3)
+                {
+                    population[j].gender = false;
+                    #pragma omp critical
+                    solutions.push_back(population[j]);
+                }else population[j].gender = true;
+            } 
             
+            #pragma omp single
+            alive_vector.clear();
+                        
+            compute_fitness(population, indicators, bounds);
+            
+            #pragma omp single
+            sorting_population(population);
+            
+            #pragma omp for schedule(guided)  
+            for(j=0; j<poblacion; ++j) 
+                if(population[j].age == OLD) 
+                {
+                    if(!(population[j].objetives[1] > 0) || population[j].objetives[2] == 1) exit(1);
+                    
+                    optimum_mutations[rand_r(&random_vector[id_th])%3](population[j], population[j+poblacion], 65, id_th, random_vector, auxiliar_cdss);
+                    
+                    if(!(population[j+poblacion].objetives[1] > 0) || population[j+poblacion].objetives[2] == 1) exit(1);
+                    
+                    population[j].age = OLD;
+                }
+
+            stabilize_population();
+
             #pragma omp for schedule(guided)  
             for(j=0; j<poblacion; ++j){
                 if(population[j].age == OLD){
@@ -370,25 +395,15 @@ int main(int argc, char const *argv[])
                     population[j].gender = true;
                 }
             }
-            
+
             #pragma omp single
-            cout << "[!] Fitness." << endl;
-            
-            compute_fitness(population, indicators, bounds);
-            #pragma omp single
-            {
-                cout << "[!] Ordenación" << endl;
-            
-                sorting_population(population);
-                stabilize_population();
-                cout << fitness_vector.size() << endl;
-            
-                i++;     
-            }
+            i++;            
         }
     
         #pragma omp single
         {
+            std::copy(population.begin(), population.end(), std::back_inserter(solutions));
+            create_superCAI(total_cds, aminoacids);
             population.clear();
             indicators.resize(solutions.size());
         }
@@ -401,7 +416,6 @@ int main(int argc, char const *argv[])
 
     sorting_population(solutions);
     write_results(argv[4]);
-    for(string sda : fitness_vector) cout << sda << endl;
     
     return 0;
 }

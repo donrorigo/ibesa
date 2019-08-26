@@ -33,6 +33,7 @@ aim mHD(vector<string> cds_vector)
                 result.cds1 = cds_vector[i];
                 result.cds2 = cds_vector[j];
             } 
+            
     result.value = min/L;
     
     return result;
