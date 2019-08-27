@@ -247,7 +247,7 @@ void write_results(string code)
 
         j=0;
         fs << "individual" << i << " mCAI=" << solution.objetives[0] << ",mHD=" <<  solution.objetives[1] 
-        << ",lLCS=" <<  solution.objetives[2] << ",Fitness=" << solution.fitness << ",Gender=" << (solution.gender ? "Male" : "Female") << endl;
+        << ",lLCS=" <<  solution.objetives[2] << endl;
         for(string cds : solution.cds){
             fs << "CDS-" << j << "   " << cds << endl;
             j++;
