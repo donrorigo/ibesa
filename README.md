@@ -6,7 +6,7 @@ This paper presents a possible solution to the problem of homologous recombinati
 This project has been developed on Linux Mint Cinnamon, Version 4.0.10
 1.	**Installation process**: For the compilation of the project you can find the Makefile in the project folder.
 2.	**Software dependencies**: There are no software dependencies.  
-3.	**Latest releases**: This code reaches 36 percent in the hypervolume metric.
+3.	**Latest releases**: This code reaches 36 percent in the hypervolume metric of the B7KHU9 protein.
 4.	**API references**: The OpenMP API has been used to allow the use of parallelism.
 
 ## Build and Test
