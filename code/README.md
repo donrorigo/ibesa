@@ -1,7 +1,9 @@
 # Multi-Objective ESA derived based on Indicators
 ## Información
 Proyecto: Trabajo de Fin de Grado
+
 Autor: Rodrigo Puerto Pedrera
+
 Tutor: Miguel Ángel Vega Rodriguez
 
 Grado en Ingeniería Informática en Ingeniería de los Computadores
