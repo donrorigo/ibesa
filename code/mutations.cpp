@@ -70,6 +70,7 @@ void cai_mutation(single & a, single & result, double Pm, int th, vector<unsigne
         }      
     }
 
+    update_CDSs(a.cds, new_cds, CDS, auxiliar_cdss[th]);
     update_vector(auxiliar_cdss[th], result.cds);
     result.objetives[0] = (mCAI(result.cds).value);
     id += to_string(result.objetives[0]);

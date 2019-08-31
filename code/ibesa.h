@@ -35,7 +35,7 @@ vector<unsigned int> random_vector;
 vector<vector<string> > auxiliar_cdss;
 typedef function<void(single &,single &, int, int, vector<unsigned int> &, vector<vector<string> > &)> mutation_function;
 vector<mutation_function> greedy_mutations;
-vector<mutation_function> optimum_mutations;
+vector<mutation_function> optimum_mutations;    
 static set<string> fitness_vector;
 static set<string> solutions_vector;
 static set<string> alive_vector;
