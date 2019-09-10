@@ -65,11 +65,7 @@ aim mlrcs(vector<string> cds)
 
     aim mlr = mlrs(cds);
     
-    if(mlr.value > max){
-        max = mlr.value;
-        result.cds1 = mlr.cds1;
-    } 
-
+    if(mlr.value > max) result = mlr;
     result.value = max/l;
 
 

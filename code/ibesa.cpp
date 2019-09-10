@@ -180,10 +180,8 @@ void init(int total, string amino_sequence, int CDSs, int machos)
         individuo.age = 0;
         individuo.gender = (i < machos) ? true : false; 
         population.push_back(individuo);
-        fitness_vector.insert(id);
     }
 
-    
     return;
 }
 
@@ -193,33 +191,22 @@ void stabilize_population()
     #pragma omp for schedule(guided)  
     for(size_t e=0; e<population.size(); ++e){
         
-        if(population[e].objetives[0] > 0.65)
+        if(population[e].objetives[0] >= 0.65)
         {
             #pragma omp critical
-            if(solutions_vector.find(population[e].id)==solutions_vector.end())
-            {
-                solutions_vector.insert(population[e].id);
-                solutions.push_back(population[e]);
+            solutions.push_back(population[e]);
                 
-            }    
+                
         } 
         else if(population[e].objetives[1] >= 0.22)
         {
             #pragma omp critical
-            if(solutions_vector.find(population[e].id)==solutions_vector.end())
-            {
-                solutions_vector.insert(population[e].id);
-                solutions.push_back(population[e]);
-            }                
+            solutions.push_back(population[e]);
         }
         else if(population[e].objetives[0] <= 0.13)
         {
             #pragma omp critical
-            if(solutions_vector.find(population[e].id)==solutions_vector.end())
-            {
-                solutions_vector.insert(population[e].id);
-                solutions.push_back(population[e]);
-            }                
+            solutions.push_back(population[e]);
         } 
     }
 }
@@ -301,15 +288,16 @@ int main(int argc, char const *argv[])
         3. numero de individuos machos 
         4. codigo de la secuencia
         5. secuencia de aminoácidos
-        6. numero de CDSs a generar*/
+        6. numero de CDSs a generar
+*/
 {
     cout << "[!] Proteína " << argv[4] << " iniciada." << endl; 
 
     /* definición de variables e inicialización */
     int j, i=0;
     int poblacion = atoi(argv[1]), epochs = atoi(argv[2]), machos = atoi(argv[3]);
-    greedy_mutations = {lrcs_mutation, mhd_mutation, cai_mutation};
-    optimum_mutations = {undue_cai_mutation, undue_mhd_mutation, undue_lrcs_mutation};
+    greedy_mutations = {lrcs_mutation, mhd_mutation, cai_mutation, undue_mhd_mutation, undue_lrcs_mutation};
+    optimum_mutations = {undue_cai_mutation};
     unsigned int seed = time(NULL); 
     int id_th, hilos = omp_get_max_threads();
     int total_cds = stoi(argv[6]);
@@ -321,13 +309,13 @@ int main(int argc, char const *argv[])
     indicators.reserve(poblacion*2);
     for(int i=0; i<poblacion*2; ++i) indicators[i].reserve(poblacion*2);       
     random_vector.reserve(hilos);
-    auxiliar_cdss.resize(hilos);
     for(int th=0; th<hilos; ++th) random_vector[th] = seed+th;
 
     /* inicialización de la población */
     init(poblacion, aminoacids, total_cds, machos);
 
     /* inicialización del vector auxiliar */
+    auxiliar_cdss.resize(hilos);
     for(int th = 0; th < hilos; ++th) auxiliar_cdss[th] = population[0].cds;
 
     #pragma omp parallel private(id_th)
@@ -346,57 +334,82 @@ int main(int argc, char const *argv[])
                 {   
                     alive_vector.insert(population[j].id);
                     if(alive_vector.find(population[j].id)==alive_vector.end()) alive_vector.insert(population[j].id);
-                    else
-                    {
-                        population[j].gender = true; 
-                        fitness_vector.insert(population[j].id); 
-                    } 
+                    else population[j].gender = true; 
+                     
                 }
 
                 /* mutaciones */
-                (population[j].gender) ? random_mutation(population[j], population[j+poblacion], rand_r(&random_vector[id_th])%80+1, id_th, random_vector, auxiliar_cdss) : 
-                greedy_mutations[rand_r(&random_vector[id_th])%5](population[j], population[j+poblacion], rand_r(&random_vector[id_th])%70+1, id_th, random_vector, auxiliar_cdss);
+                (population[j].gender) ? random_mutation(population[j], population[j+poblacion], 5, id_th, random_vector, auxiliar_cdss) : 
+                greedy_mutations[rand_r(&random_vector[id_th])%3](population[j], population[j+poblacion], 70, id_th, random_vector, auxiliar_cdss);
                 
                 /* aumento de edad */
-                if(dominates(population[j+poblacion], population[j]) == -1) population[j].age++;  
-                if(population[j].objetives[0] > 0.46 && population[j].objetives[1] > 0.16 && population[j].objetives[2] < 0.3)
+                if(dominates(population[j+poblacion], population[j]) == -1) population[j].age=0;
+                else population[j].age++;
+
+                /* gestión de soluciones */
+                if((population[j].objetives[0] > 0.43 && population[j].objetives[1] > 0.16 && population[j].objetives[2] < 0.3) && fitness_vector.find(population[j].id)==fitness_vector.end())
                 {
                     population[j].gender = false;
+
+                    #pragma omp critical
+                    fitness_vector.insert(population[j].id);
+
+                    /* soluciones pareto óptimas */
                     #pragma omp critical
                     solutions.push_back(population[j]);
-                }else population[j].gender = true;
+                }else 
+                    population[j].gender = true;
             } 
             
             #pragma omp single
             alive_vector.clear();
-                        
+
             compute_fitness(population, indicators, bounds);
             
             #pragma omp single
             sorting_population(population);
             
             #pragma omp for schedule(guided)  
-            for(j=0; j<poblacion; ++j) 
+            for(j=0; j<poblacion; ++j)
+            { 
                 if(population[j].age == OLD) 
                 {
                     if(!(population[j].objetives[1] > 0) || population[j].objetives[2] == 1) exit(1);
                     
-                    optimum_mutations[rand_r(&random_vector[id_th])%3](population[j], population[j+poblacion], 65, id_th, random_vector, auxiliar_cdss);
+                    optimum_mutations[0](population[j+poblacion], population[j+poblacion], rand_r(&random_vector[id_th])% 25 + 60, id_th, random_vector, auxiliar_cdss);
                     
+                    cout << "                   [!]" << population[j+poblacion].id << endl;
+
+                    #pragma omp critical
+                    fitness_vector.insert(population[j+poblacion].id);
+
                     if(!(population[j+poblacion].objetives[1] > 0) || population[j+poblacion].objetives[2] == 1) exit(1);
                     
-                    population[j].age = OLD;
-                }
+                    if(population[j+poblacion].objetives[0] >= 0.65)
+                    {
+                        #pragma omp critical
+                        solutions.push_back(population[j+poblacion]);
+                    }
+                    else if(population[j+poblacion].objetives[1] >= 0.22)
+                    {
+                        #pragma omp critical
+                        solutions.push_back(population[j+poblacion]);
+                    }
+                    else if(population[j+poblacion].objetives[0] <= 0.13)
+                    {
+                        #pragma omp critical
+                        solutions.push_back(population[j+poblacion]);
+                    }
 
-            stabilize_population();
-
-            #pragma omp for schedule(guided)  
-            for(j=0; j<poblacion; ++j){
-                if(population[j].age == OLD){
-                    random_mutation(population[j], population[j], 90, id_th, random_vector, auxiliar_cdss);
+                    random_mutation(population[j], population[j], 10, id_th, random_vector, auxiliar_cdss);
                     population[j].gender = true;
+
                 }
+
             }
+            
+            #pragma omp single
+            for(int i=0; i<poblacion; i++) std::cout << population[i].id << endl;
 
             #pragma omp single
             i++;            

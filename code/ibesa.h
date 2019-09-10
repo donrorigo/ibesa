@@ -22,7 +22,7 @@
 
 #define KAPPA 0.05 /* variable de escala */ 
 #define RHO 1.1 /* variable auxiliar de hipervolumen */
-#define OLD 7 /* numero de mutaciones donde se considera la solucion estancada */
+#define OLD 3 /* numero de mutaciones donde se considera la solucion estancada */
 #define PROBABILITY 5
 
 using namespace std;
@@ -37,7 +37,6 @@ typedef function<void(single &,single &, int, int, vector<unsigned int> &, vecto
 vector<mutation_function> greedy_mutations;
 vector<mutation_function> optimum_mutations;    
 static set<string> fitness_vector;
-static set<string> solutions_vector;
 static set<string> alive_vector;
 
 static void init(int total, string amino_sequence, int CDSs, int machos);

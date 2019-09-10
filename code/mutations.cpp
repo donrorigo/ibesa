@@ -24,7 +24,7 @@ void random_mutation(single &a, single &result, double Pm, int th, vector<unsign
             codon = CDS.substr(i,3);
             size = amino_codons[which_amino[codon]].size();
 
-            if(rand_r(&random_vector[th]) % 100 + 1 < Pm && size > 1)
+            if(rand_r(&random_vector[th]) % 100 < Pm && size > 1)
             {
                 do{
                     random_codon = amino_codons[which_amino[codon]][rand_r(&random_vector[th])%size];
@@ -59,7 +59,7 @@ void cai_mutation(single & a, single & result, double Pm, int th, vector<unsigne
     for(int i = 0; i<(int)CDS.size(); i+=3)
     {
         codon = CDS.substr(i,3);   
-        if(rand_r(&random_vector[th]) % 100 + 1 < Pm && amino_weights[codon] != 1)  
+        if(rand_r(&random_vector[th]) % 100 < Pm && amino_weights[codon] != 1)  
         {
             do{
                 random_codon = amino_codons[which_amino[codon]][rand_r(&random_vector[th])%amino_codons[which_amino[codon]].size()];
@@ -88,31 +88,33 @@ void cai_mutation(single & a, single & result, double Pm, int th, vector<unsigne
 
 void mhd_mutation(single & a, single &result, double Pm, int th, vector<unsigned int> &random_vector, vector<vector<string> > &auxiliar_cdss)
 {
-   result.cds = a.cds;
-    aim aim = mHD(a.cds);
+    result.cds = a.cds;
+    aim aim_v = mHD(a.cds);   
     string codon, best_codon, new_CDS1, id = "";
-    double curr_HD, curr_mHD=aim.value, best_HD=-1, best_mHD=-1, new_HD, new_mHD;
-    
-    for(int i = 0; i<(int)aim.cds1.size(); i+=3) 
+    aim curr_HD, curr_mHD=aim_v, best_HD, best_mHD, new_HD, new_mHD;
+    best_HD.value=-1;
+    best_mHD.value=-1;
+
+    for(int i = 0; i<(int)aim_v.cds1.size(); i+=3) 
     {
-        codon = aim.cds1.substr(i,3);
-        if(rand_r(&random_vector[th]) % 100 + 1 < Pm &&  amino_codons[which_amino[codon]].size() > 1)
+        codon = aim_v.cds1.substr(i,3);
+        if(rand_r(&random_vector[th]) % 100 < Pm &&  amino_codons[which_amino[codon]].size() > 1)
         {
-            curr_HD = HD(aim.cds1,aim.cds2);
+            curr_HD.value = HD(aim_v.cds1,aim_v.cds2);
 
             for(string new_codon : amino_codons[which_amino[codon]])
             {
                 if(new_codon != codon)
                 {
-                    new_CDS1 = change_CDS(aim.cds1, new_codon, i);
-                    new_HD = HD(new_CDS1, aim.cds2);
-                    update_CDSs(a.cds, new_CDS1, aim.cds1, auxiliar_cdss[th]);
-                    new_mHD = mHD(auxiliar_cdss[th]).value;
-                    if(new_mHD > curr_mHD && new_mHD > best_mHD)
+                    new_CDS1 = change_CDS(aim_v.cds1, new_codon, i);
+                    new_HD.value = HD(new_CDS1, aim_v.cds2);
+                    update_CDSs(a.cds, new_CDS1, aim_v.cds1, auxiliar_cdss[th]);
+                    new_mHD = mHD(auxiliar_cdss[th]);
+                    if(new_mHD.value > curr_mHD.value && new_mHD.value > best_mHD.value)
                     {
                         best_mHD = new_mHD;
                         best_codon = new_codon;
-                    }else if (best_mHD == -1 && new_mHD == curr_mHD && new_HD > curr_HD && new_HD > best_HD)
+                    }else if (best_mHD.value == -1 && new_mHD.value == curr_mHD.value && new_HD.value > curr_HD.value && new_HD.value > best_HD.value)
                     {
                         best_HD = new_HD;
                         best_codon = new_codon;
@@ -120,7 +122,14 @@ void mhd_mutation(single & a, single &result, double Pm, int th, vector<unsigned
                 }
             }
 
-            if(best_mHD != -1 || best_HD != -1) update_vector(auxiliar_cdss[th], result.cds); 
+            if(best_mHD.value != -1 || best_HD.value != -1){
+                new_CDS1 = change_CDS(aim_v.cds1, best_codon, i);
+                update_CDSs(a.cds, new_CDS1, aim_v.cds1, auxiliar_cdss[th]);
+                update_vector(auxiliar_cdss[th], result.cds); 
+            }
+
+            best_mHD.value = -1;
+            best_HD.value = -1;
         }
 
     }
@@ -152,12 +161,13 @@ void lrcs_mutation(single & a, single &result, double Pm, int th, vector<unsigne
 
     for(int i = 0; i<(int)curr_lrcs.cds1.size(); i+=3)
     {   
+        /* cálculo del índice donde se encuentra, el CDS y el codon correspondientes */
         ret = ((curr_lrcs.index!=0) ? a.cds[0].length()%curr_lrcs.index : 0)%3;
         CDS = (curr_lrcs.index>=a.cds[0].length()) ? cds3 : cds2;
         index = (curr_lrcs.index>=a.cds[0].length()) ? curr_lrcs.index-(a.cds[0].length()) : curr_lrcs.index;
         codon = (ret!=0) ? CDS.substr((index+i-ret),3) : CDS.substr((index+i),3);
   
-        if(rand_r(&random_vector[th]) % 100 + 1 < Pm && amino_codons[which_amino[codon]].size() > 1)
+        if(rand_r(&random_vector[th]) % 100 < Pm && amino_codons[which_amino[codon]].size() > 1)
         {
             for(string random_codon : amino_codons[which_amino[codon]])
             {
@@ -169,7 +179,7 @@ void lrcs_mutation(single & a, single &result, double Pm, int th, vector<unsigne
                     new_lrcs = mlrcs(auxiliar_cdss[th]);
                     if(new_lrcs.value < curr_lrcs.value)
                     {
-                        result.cds = auxiliar_cdss[th];
+                        update_vector(auxiliar_cdss[th], result.cds);
                         curr_lrcs.value = new_lrcs.value;    
                     }
                 }
@@ -208,7 +218,7 @@ void undue_cai_mutation(single &a, single &result, double Pm, int th, vector<uns
             codon = CDS.substr(i,3);
             size = amino_codons[which_amino[codon]].size();
 
-            if(rand_r(&random_vector[th]) % 100 + 1 < Pm && amino_weights[codon] != 1)
+            if(rand_r(&random_vector[th]) % 100 < Pm && amino_weights[codon] != 1)
             {
                 do{
                     random_codon = amino_codons[which_amino[codon]][rand_r(&random_vector[th])%size];
@@ -240,41 +250,52 @@ void undue_mhd_mutation(single &a, single &result, double Pm, int th, vector<uns
 /*  segunda mutación avariciosa */
 {
     result.cds = a.cds;
-    aim aim_v = mHD(a.cds);
+    aim aim_v = mHD(a.cds);   
     string codon, best_codon, new_CDS1, id = "";
-    aim curr_mHD=aim_v, new_mHD;
-    bool end = false;
-    int c = 0;
-    
-    do{
-        aim_v = curr_mHD;
-        end = true;
+    aim curr_HD, curr_mHD=aim_v, best_HD, best_mHD, new_HD, new_mHD;
+    best_HD.value=-1;
+    best_mHD.value=-1;
 
-        for(int i = 0; i<(int)aim_v.cds1.size(); i+=3) // foreach codon in CDS1
+    for(int i = 0; i<(int)aim_v.cds1.size(); i+=3) 
+    {
+        codon = aim_v.cds1.substr(i,3);
+        if(rand_r(&random_vector[th]) % 100 < Pm &&  amino_codons[which_amino[codon]].size() > 1)
         {
-            codon = aim_v.cds1.substr(i,3);
+            curr_HD.value = HD(aim_v.cds1, aim_v.cds2);
 
-            if(amino_codons[which_amino[codon]].size() > 1)
+            for(string new_codon : amino_codons[which_amino[codon]])
             {
-                for(string new_codon : amino_codons[which_amino[codon]])
+                if(new_codon != codon)
                 {
-                    if(new_codon != codon)
+                    new_CDS1 = change_CDS(aim_v.cds1, new_codon, i);
+                    new_HD.value = HD(new_CDS1, aim_v.cds2);
+                    update_CDSs(a.cds, new_CDS1, aim_v.cds1, auxiliar_cdss[th]);
+                    new_mHD = mHD(auxiliar_cdss[th]);
+                    if(new_mHD.value > curr_mHD.value && new_mHD.value > best_mHD.value)
                     {
-                        new_CDS1 = change_CDS(aim_v.cds1, new_codon, i);
-                        update_CDSs(a.cds, new_CDS1, aim_v.cds1, auxiliar_cdss[th]);
-                        new_mHD = mHD(auxiliar_cdss[th]);
-                        if(new_mHD.value > curr_mHD.value)
-                        {
-                            update_vector(auxiliar_cdss[th], result.cds);
-                            end = false;
-                            curr_mHD = new_mHD;
-                        }
+                        best_mHD = new_mHD;
+                        best_codon = new_codon;
+                    }else if (best_mHD.value == -1 && new_mHD.value == curr_mHD.value && new_HD.value > curr_HD.value && new_HD.value > best_HD.value)
+                    {
+                        best_HD = new_HD;
+                        best_codon = new_codon;
                     }
                 }
             }
-        }
-    }while(!end);
 
+            if(best_mHD.value != -1 || best_HD.value != -1){
+                new_CDS1 = change_CDS(aim_v.cds1, best_codon, i);
+                update_CDSs(a.cds, new_CDS1, aim_v.cds1, auxiliar_cdss[th]);
+                update_vector(auxiliar_cdss[th], result.cds); 
+                aim_v = (best_mHD.value != -1) ? best_mHD : best_HD;
+                i = 0;
+            }
+
+            best_mHD.value = -1;
+            best_HD.value = -1;
+        }
+
+    }
     result.objetives[0] = (mCAI(result.cds).value);
     id += to_string(result.objetives[0]);
     result.objetives[1] = curr_mHD.value;
@@ -314,7 +335,6 @@ void undue_lrcs_mutation(single &a, single &result, double Pm, int th, vector<un
             {
                 if(random_codon != codon)
                 {
-                    new_cds = "";
                     new_cds = change_CDS(CDS, random_codon, ((ret!=0) ? (index+i-ret): (index+i)));
                     update_CDSs(a.cds, new_cds, CDS, auxiliar_cdss[th]);
                     new_lrcs = mlrcs(auxiliar_cdss[th]);
