@@ -36,7 +36,6 @@ vector<vector<string> > auxiliar_cdss;
 typedef function<void(single &,single &, int, int, vector<unsigned int> &, vector<vector<string> > &)> mutation_function;
 vector<mutation_function> greedy_mutations;
 vector<mutation_function> optimum_mutations;    
-static set<string> fitness_vector;
 static set<string> alive_vector;
 
 static void init(int total, string amino_sequence, int CDSs, int machos);
