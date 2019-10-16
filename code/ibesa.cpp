@@ -187,33 +187,6 @@ void init(int total, string amino_sequence, int CDSs, int machos)
     return;
 }
 
-void stabilize_population(void)
-/* permite la no estancación del algoritmo cambiando el sexo de los elefantes */
-{
-    #pragma omp for schedule(guided)  
-    for(size_t e=0; e<population.size(); ++e){
-        
-        if(population[e].objetives[0] >= 0.65)
-        {
-            #pragma omp critical
-            solutions.push_back(population[e]);
-                
-                
-        } 
-        else if(population[e].objetives[1] >= 0.22)
-        {
-            #pragma omp critical
-            solutions.push_back(population[e]);
-        }
-        else if(population[e].objetives[0] <= 0.13)
-        {
-            #pragma omp critical
-            solutions.push_back(population[e]);
-        } 
-    }
-    return;
-}
-
 void show_cdss(vector<string> CDSs)
 /*  muestra por consola todos los CDS pasados por parámetro */
 {

@@ -18,6 +18,11 @@ typedef struct single_st{
     int age;
     string id;
 
+    bool operator==(const single_st& a)
+    {
+        return (id==a.id) ? true : false;
+    }
+
     single_st& operator =(const single_st& a)
     {
         gender = a.gender;

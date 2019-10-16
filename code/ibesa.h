@@ -31,10 +31,10 @@
 using namespace std;
 
 vector<range> bounds; /* array de límites: [0] = HD, [1] = CAI, [2] = LRCS */
-vector<single> population;
-vector<single> optimum_mutated;
-vector<single> solutions;
-vector<single> paretofront;
+vector<single> population; /* vector para la poblacion */
+vector<single> optimum_mutated; /* vector auxiliar para las mutaciones optimas */
+vector<single> solutions; /* vector grande de soluciones */
+vector<single> paretofront; /* vector final con el frente de pareto */
 vector<vector<double> > indicators;
 vector<unsigned int> random_vector;
 vector<vector<string> > auxiliar_cdss;
@@ -49,5 +49,4 @@ static void sorting_population(vector<single> &vector_pop);
 static void write_results(string code);
 static void show_population();
 static void show_single(single a);
-static void stabilize_population();
 static void create_superCAI(int numC, string sequence);
