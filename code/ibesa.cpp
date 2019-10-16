@@ -139,7 +139,7 @@ void create_superCAI(int numC, string sequence)
     result.fitness = 0;
     result.age = 0;
     result.gender = true; 
-    solutions.push_back(result);
+    population.push_back(result);
 
     return;
 }
@@ -152,9 +152,11 @@ void init(int total, string amino_sequence, int CDSs, int machos)
     return -> lista population inicializada */
 {
     int random_codon;
+    int threads = omp_get_max_threads();
     string id;
-    
-    for(int i=0; i < total*2; ++i) // numero de individuos de la población 
+     
+           
+    for(int i=1; i < total*2; ++i) // numero de individuos de la población 
     {          
         single individuo;
         id = "";
@@ -229,7 +231,7 @@ void write_results(string code)
     fs << setprecision(15);
     int j, i=0;
 
-    for(single solution : solutions)
+    for(single solution : paretofront)
     {   
         //if(i==100) break;
 
@@ -309,22 +311,17 @@ int main(int argc, char const *argv[])
 
     /* reserva de memoria */
     population.reserve(poblacion*2);
+    optimum_mutated.reserve(hilos);
     bounds.reserve(3);
     indicators.reserve(poblacion*2);
     for(int i=0; i<poblacion*2; ++i) indicators[i].reserve(poblacion*2);       
     random_vector.reserve(hilos);
     for(int th=0; th<hilos; ++th) random_vector[th] = seed+th;
 
-        #pragma omp single
-        {
-            std::copy(population.begin(), population.end()-poblacion, std::back_inserter(solutions)); /* guardado de la última población */
-            create_superCAI(total_cds, aminoacids);
-            // population.clear();
-            // indicators.resize(solutions.size());
-        }
-
     /* inicialización de la población */
+    create_superCAI(total_cds, aminoacids);
     init(poblacion, aminoacids, total_cds, machos);
+    for(int th=0; th<hilos; ++th) optimum_mutated[th] = population[0];
 
     /* inicialización del vector auxiliar */
     auxiliar_cdss.resize(hilos);
@@ -336,59 +333,64 @@ int main(int argc, char const *argv[])
         while(i < epochs)   
         {
             #pragma omp single
-            cout << "[!] Generación: " << i  << endl;
+            {
+                cout << "[!] Generación: " << i  << endl;
+                medias[0]=medias[1]=medias[2]=0.0;
+            }
 
-            // calculo de media de cada objetivo: for de cada elefante.. calculo de la media incremental en un vector auxiliar de 3 posiciones
-            medias[0]=medias[1]=medias[2]=0;
+            /* calculo de la métrica de calidad */
             #pragma omp for schedule(guided)   
             for(j=0; j<poblacion;j++)
             {
                 medias[0]+=population[j].objetives[0];
                 medias[1]+=population[j].objetives[1];
                 medias[2]+=population[j].objetives[2];
-
-                // calculo de media de cada objetivo: for de cada elefante.. calculo de la media incremental en un vector auxiliar de 3 posiciones
             }
 
-            medias[0]/=poblacion;
-            medias[1]/=poblacion;
-            medias[2]/=poblacion;
-
+            #pragma omp single
+            {
+                medias[0]/=(float)poblacion;
+                medias[1]/=(float)poblacion;
+                medias[2]/=(float)poblacion;   
+            }
+            
+            /* elección de sexo */
             #pragma omp for schedule(guided)   
             for(j=0; j<poblacion;j++)
             {
+                if(population[j].objetives[0] > medias[0] && population[j].objetives[1] > medias[1] && population[j].objetives[2] < medias[2]) population[j].gender = false;
+                else population[j].gender = true;
+            }
+
+            /* mutaciones */
+            #pragma omp for schedule(guided)   
+            for(j=0; j<poblacion;j++)
+            {
+                if (!population[j].gender) {
+                    
+                    greedy_mutations[rand_r(&random_vector[id_th])%3](population[j], population[j+poblacion], GREEDYMUTATION, id_th, random_vector, auxiliar_cdss);
+                    
+                    /* control de convergencia a una única solución */
+                    if (population[j].id == population[j+poblacion].id) random_mutation(population[j], population[j+poblacion], RANDOMMUTATION, id_th, random_vector, auxiliar_cdss); 
                 
-                if (population[j].gender == false) {
-                    greedy_mutations[rand_r(&random_vector[id_th])%3](population[j], population[j+poblacion], 70, id_th, random_vector, auxiliar_cdss);
-                    if (population[j] == population[j+poblacion]) random_mutation(population[j], population[j+poblacion], 5, id_th, random_vector, auxiliar_cdss); 
-                }
-                else random_mutation(population[j], population[j+poblacion], 5, id_th, random_vector, auxiliar_cdss) : 
+                }else random_mutation(population[j], population[j+poblacion], RANDOMMUTATION, id_th, random_vector, auxiliar_cdss);
                 
                 /* aumento de edad */
-                if(dominates(population[j+poblacion], population[j]) == 1) population[j].age=0;
+                if(dominates(population[j+poblacion], population[j])) population[j].age=0;
                 else population[j].age++;
 
-                /* gestión de soluciones */
-                if(population[j].objetives[0] > medias[0] && population[j].objetives[1] > medias[1] && population[j].objetives[2] < medias[2]) // pregunto por la media
-                    population[j].gender = false; /* si cumple unos mínimos se convierte el elefante a hembra */
-
-                else population[j].gender = true;
             } 
             
+            /* reset de los elefantes viejos */
             #pragma omp for schedule(guided)  
             for(j=0; j<2*poblacion; ++j)  /* mutaciones óptimas */
             { 
                 if(population[j].age == OLD) 
                 {
-                    
-                    optimum_mutations[rand_r(&random_vector[id_th])%3](population[j], mutated_sol, rand_r(&random_vector[id_th])% 25 + 60, id_th, random_vector, auxiliar_cdss);
-
-                    if(dominates(mutated_sol, population[j]) == 1) population[j]=mutated_sol; 
-                    else random_mutation(population[j], population[j], 10, id_th, random_vector, auxiliar_cdss); 
-
-                    population[j].age=0;  
+                    optimum_mutations[rand_r(&random_vector[id_th])%3](population[j], optimum_mutated[id_th], rand_r(&random_vector[id_th])% 5 + GREEDYMUTATION, id_th, random_vector, auxiliar_cdss);
+                    if(dominates(optimum_mutated[id_th], population[j]) == 1) population[j]=optimum_mutated[id_th]; 
+                    else random_mutation(population[j], population[j], 2*RANDOMMUTATION, id_th, random_vector, auxiliar_cdss); 
                 }
-
             }
             
             /* cálculo del fitness */
@@ -396,27 +398,42 @@ int main(int argc, char const *argv[])
             
             #pragma omp single
             {
-                alive_vector.clear();
-                sorting_population(population);   /* selección por elitismo */
+                sorting_population(population);   /* selección por elitismo (mayor fitness) */
+                std::copy(population.begin()+poblacion, population.end(), std::back_inserter(solutions)); /* guardado de la población mutada */
+                i++; /* aumento de generación */
             }
-
-            for(j=poblacion; j<2*poblacion; ++j) solutions.push_back(population[j]);
-
-            #pragma omp single
-            i++;            
-        }
-    
-        // #pragma omp for schedule(guided)
-        // for(int i=0; i<solutions.size(); ++i) indicators[i].resize(solutions.size());   
-        // compute_fitness(solutions, indicators, bounds);    
-        
+        }    
     }
 
-    for(j=0; j< poblacion; ++j) solutions.push_back(population[j]);
+    /* guardado de la última población */
+    std::copy(population.begin(), population.end()-poblacion, std::back_inserter(solutions)); 
 
-    // Filtrado de solutions, dejando solo las no repetidas y las no dominadas
+    volatile bool dominated;
+    
+    /* creación del frente de pareto */
+    for(i=0; i<2*poblacion; ++i)
+    {
+        dominated = false;
 
-    //sorting_population(solutions);
+        /* control de elefante dominado */
+        #pragma omp parallel for shared(dominated)
+        for(j=1; j<2*poblacion; ++j)
+        {
+            if(dominated) continue;
+            if(dominates(solutions[j], solutions[i])) dominated = true; 
+        } 
+
+        /* control de no repetido */
+        if(!dominated)
+        {
+            if(nonrepeat.find(solutions[i].id)==nonrepeat.end()) 
+            {
+                nonrepeat.insert(solutions[i].id);
+                paretofront.push_back(solutions[i]);
+            }
+        }
+    }
+
     write_results(argv[4]);
     cout << "[!] Proteína " << argv[4] << " terminada.\n" << endl; 
 

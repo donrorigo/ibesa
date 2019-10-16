@@ -17,6 +17,19 @@ typedef struct single_st{
     double fitness;
     int age;
     string id;
+
+    single_st& operator =(const single_st& a)
+    {
+        gender = a.gender;
+        cds = a.cds;
+        objetives[0] = a.objetives[0];
+        objetives[1] = a.objetives[1];
+        objetives[2] = a.objetives[2]; 
+        fitness = a.fitness;
+        age = a.age;
+        id = a.id;
+        return *this;
+    }
 } single; /* estructura de cada individuo */
 
 typedef struct range_st{
