@@ -50,3 +50,10 @@ static void write_results(string code);
 static void show_population();
 static void show_single(single a);
 static void create_superCAI(int numC, string sequence);
+static void export2file_mh();
+
+/* atributos de debuggeo */
+map <int, std::pair<int, int> > howmany; /* primera posición machos */
+map <int, int > oldest; 
+map <int, int > nonutility; 
+map <int, int > optimum_utility;
