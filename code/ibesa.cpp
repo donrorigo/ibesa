@@ -344,7 +344,7 @@ int main(int argc, char const *argv[])
                     greedy_mutations[rand_r(&random_vector[id_th])%3](population[j], population[j+poblacion], GREEDYMUTATION, id_th, random_vector, auxiliar_cdss);
                     
                     /* control de convergencia a una única solución */
-                    if (population[j].id == population[j+poblacion].id) random_mutation(population[j], population[j+poblacion], RANDOMMUTATION, id_th, random_vector, auxiliar_cdss); 
+                    if (population[j] == population[j+poblacion]) random_mutation(population[j], population[j+poblacion], RANDOMMUTATION, id_th, random_vector, auxiliar_cdss); 
                 
                 }else random_mutation(population[j], population[j+poblacion], RANDOMMUTATION, id_th, random_vector, auxiliar_cdss);
                 
@@ -381,9 +381,10 @@ int main(int argc, char const *argv[])
     /* guardado de la última población */
     std::copy(population.begin(), population.end()-poblacion, std::back_inserter(solutions)); 
 
-    volatile bool dominated;
     
     /* creación del frente de pareto */
+    volatile bool dominated;
+
     for(i=0; i<2*poblacion; ++i)
     {
         dominated = false;
@@ -407,6 +408,7 @@ int main(int argc, char const *argv[])
         }
     }
 
+    /* escritura en fichero */
     write_results(argv[4]);
     cout << "[!] Proteína " << argv[4] << " terminada.\n" << endl; 
 
