@@ -269,13 +269,13 @@ void export2file_mh()
     {
         machos = howmany[i].first;
         hembras = howmany[i].second;
-        fs << "Epoca "<< i << endl;
-        fs << "     Número de machos y hembras:" << endl;
-        fs << "         - machos = " << machos << endl;
-        fs << "         - hembras = " << hembras << endl;
-        fs << "     Número de elefantes fallecidos por edad: " << oldest[i] << endl;
-        fs << "     Número de «greedy mutations» que no sirven: " << nonutility[i] << endl;
-        fs << "     Número de «optimum mutations» que no han servido: " << optimum_utility[i] << endl;
+        fs << "[!] Epoca "<< i << endl;
+        fs << "       Número de machos y hembras:" << endl;
+        fs << "           - machos = " << machos << endl;
+        fs << "           - hembras = " << hembras << endl;
+        fs << "       Número de elefantes fallecidos por edad: " << oldest[i] << endl;
+        fs << "       Número de «greedy mutations» que no sirven: " << nonutility[i] << endl;
+        fs << "       Número de «optimum mutations» que no han servido: " << optimum_utility[i] << endl << endl;
     } 
     fs.close();
     return;
@@ -302,7 +302,7 @@ int main(int argc, char const *argv[])
     int id_th, hilos = omp_get_max_threads();
     volatile int machos, old, nonutil, optimum_util;
 
-    cout << "[!] Proteína " << code << " iniciada." << endl; 
+    cout << "[*] Proteína " << code << " iniciada." << endl; 
 
     /* reserva de memoria */
     population.reserve(poblacion*2);
@@ -364,7 +364,7 @@ int main(int argc, char const *argv[])
             #pragma omp for schedule(guided) reduction(+: machos)
             for(j=0; j<poblacion;j++)
             {
-                if(population[j].objetives[0] > medias[0] && population[j].objetives[1] > medias[1] && population[j].objetives[2] < medias[2]) population[j].gender = false;
+                if(population[j].objetives[0] > medias[0] || population[j].objetives[1] > medias[1] || population[j].objetives[2] < medias[2]) population[j].gender = false;
                 else{
                     population[j].gender = true;
                     machos++;
@@ -465,7 +465,7 @@ int main(int argc, char const *argv[])
     write_results(code);
     export2file_mh();
 
-    cout << "[!] Proteína " << code << " terminada.\n" << endl; 
+    cout << "[*] Proteína " << code << " terminada.\n" << endl; 
 
     return 0;
 }
