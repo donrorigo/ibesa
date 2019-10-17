@@ -156,7 +156,7 @@ void init(int total, string amino_sequence, int CDSs, int machos)
     string id;
      
            
-    for(int i=1; i < total*2; ++i) // numero de individuos de la población 
+    for(int i=1; i < total; ++i) // numero de individuos de la población 
     {          
         single individuo;
         id = "";
@@ -184,6 +184,8 @@ void init(int total, string amino_sequence, int CDSs, int machos)
         population.push_back(individuo);
     }
 
+    for (int i = 0; i < total; ++i) population.push_back(population[1]);
+       
     return;
 }
 
@@ -269,22 +271,20 @@ int main(int argc, char const *argv[])
         6. numero de CDSs a generar
 */
 {
-    cout << "[!] Proteína " << argv[4] << " iniciada." << endl; 
-
     /* definición de variables e inicialización */
     int j, i=0;
     double medias[3];
-    int poblacion = atoi(argv[1]), epochs = atoi(argv[2]), machos = atoi(argv[3]);
-    greedy_mutations = {lrcs_mutation, mhd_mutation, cai_mutation, undue_mhd_mutation, undue_lrcs_mutation};
-    optimum_mutations = {undue_cai_mutation};
+    int poblacion = atoi(argv[1]), epochs = atoi(argv[2]), machos = atoi(argv[3]), total_cds = stoi(argv[6]);
+    string code = argv[4],  aminoacids = argv[5];
+    greedy_mutations = {lrcs_mutation, mhd_mutation, cai_mutation};
+    optimum_mutations = {undue_cai_mutation, undue_mhd_mutation, undue_lrcs_mutation};
     unsigned int seed = time(NULL); 
     int id_th, hilos = omp_get_max_threads();
-    int total_cds = stoi(argv[6]);
-    string aminoacids = argv[5];
+
+    cout << "[!] Proteína " << code << " iniciada." << endl; 
 
     /* reserva de memoria */
     population.reserve(poblacion*2);
-    optimum_mutated.reserve(hilos);
     bounds.reserve(3);
     indicators.reserve(poblacion*2);
     for(int i=0; i<poblacion*2; ++i) indicators[i].reserve(poblacion*2);       
@@ -294,12 +294,13 @@ int main(int argc, char const *argv[])
     /* inicialización de la población */
     create_superCAI(total_cds, aminoacids);
     init(poblacion, aminoacids, total_cds, machos);
-    for(int th=0; th<hilos; ++th) optimum_mutated[th] = population[0];
-
+    for(int th=0; th<hilos; ++th) optimum_mutated.push_back(population[0]);
+    
     /* inicialización del vector auxiliar */
     auxiliar_cdss.resize(hilos);
     for(int th = 0; th < hilos; ++th) auxiliar_cdss[th] = population[0].cds;
-
+ 
+    /* inicio del algoritmo */
     #pragma omp parallel private(id_th)
     {   
         id_th = omp_get_thread_num();
@@ -322,16 +323,16 @@ int main(int argc, char const *argv[])
 
             #pragma omp single
             {
-                medias[0]/=(float)poblacion;
-                medias[1]/=(float)poblacion;
-                medias[2]/=(float)poblacion;   
+                medias[0]/=(double)poblacion;
+                medias[1]/=(double)poblacion;
+                medias[2]/=(double)poblacion;   
             }
             
             /* elección de sexo */
             #pragma omp for schedule(guided)   
             for(j=0; j<poblacion;j++)
             {
-                if(population[j].objetives[0] > medias[0] && population[j].objetives[1] > medias[1] && population[j].objetives[2] < medias[2]) population[j].gender = false;
+                if(population[j].objetives[0] > medias[0] || population[j].objetives[1] > medias[1] || population[j].objetives[2] < medias[2]) population[j].gender = false;
                 else population[j].gender = true;
             }
 
@@ -360,6 +361,7 @@ int main(int argc, char const *argv[])
             { 
                 if(population[j].age == OLD) 
                 {
+                    printf("[OLD] Mutación óptima con el hilo %d\n", id_th);
                     optimum_mutations[rand_r(&random_vector[id_th])%3](population[j], optimum_mutated[id_th], rand_r(&random_vector[id_th])% 5 + GREEDYMUTATION, id_th, random_vector, auxiliar_cdss);
                     if(dominates(optimum_mutated[id_th], population[j]) == 1) population[j]=optimum_mutated[id_th]; 
                     else random_mutation(population[j], population[j], 2*RANDOMMUTATION, id_th, random_vector, auxiliar_cdss); 
@@ -381,27 +383,33 @@ int main(int argc, char const *argv[])
     /* guardado de la última población */
     std::copy(population.begin(), population.end()-poblacion, std::back_inserter(solutions)); 
 
-    
+    cout << "[!] FINAL.: Tamaño de soluciones: " << solutions.size() << endl; 
     /* creación del frente de pareto */
     volatile bool dominated;
 
     for(i=0; i<2*poblacion; ++i)
     {
         dominated = false;
+        int dom;
+        printf("[ITER] Iteracción %d, con el Elefante: %s\n", i, population[i].id.c_str());
 
         /* control de elefante dominado */
-        #pragma omp parallel for shared(dominated)
-        for(j=1; j<2*poblacion; ++j)
+        #pragma omp parallel for shared(dominated) private(dom)
+        for(j=0; j<2*poblacion; ++j)
         {
             if(dominated) continue;
-            if(dominates(solutions[j], solutions[i])) dominated = true; 
+            if(dom = dominates(solutions[j], solutions[i]) == 1) dominated = true; 
+            printf("[ITER] Ireracción %d: Dominancia contra el elefante %s de valor J=%d, es de: %d\n", i, population[j].id.c_str(), j, dom);
+            fflush(stdout);
         } 
 
         /* control de no repetido */
         if(!dominated)
         {
+            cout << population[i].id << " no es dominado." << endl;
             if(nonrepeat.find(solutions[i].id)==nonrepeat.end()) 
             {
+                cout << population[i].id << " no es repetido." << endl;
                 nonrepeat.insert(solutions[i].id);
                 paretofront.push_back(solutions[i]);
             }
@@ -409,8 +417,8 @@ int main(int argc, char const *argv[])
     }
 
     /* escritura en fichero */
-    write_results(argv[4]);
-    cout << "[!] Proteína " << argv[4] << " terminada.\n" << endl; 
+    write_results(code);
+    cout << "[!] Proteína " << code << " terminada.\n" << endl; 
 
     return 0;
 }

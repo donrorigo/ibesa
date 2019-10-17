@@ -15,7 +15,8 @@ void random_mutation(single &a, single &result, double Pm, int th, vector<unsign
     string CDS;
     int size, c=0;
     
-    
+    //printf("[*] Hilo %d: Mutación random.\n", th);
+
     for(int c=0; c<a.cds.size(); ++c)
     {
         CDS = a.cds[c]; 
@@ -56,6 +57,8 @@ void cai_mutation(single & a, single & result, double Pm, int th, vector<unsigne
 {
     string codon, random_codon, new_cds = "", CDS = mCAI(a.cds).cds1, id = "";
 
+    //printf("[*] Hilo %d: Mutación avariciosa CAI.\n", th);
+
     for(int i = 0; i<(int)CDS.size(); i+=3)
     {
         codon = CDS.substr(i,3);   
@@ -94,6 +97,8 @@ void mhd_mutation(single & a, single &result, double Pm, int th, vector<unsigned
     aim curr_HD, curr_mHD=aim_v, best_HD, best_mHD, new_HD, new_mHD;
     best_HD.value=-1;
     best_mHD.value=-1;
+
+    //printf("[*] Hilo %d: Mutación avariciosa MHD.\n", th);
 
     for(int i = 0; i<(int)aim_v.cds1.size(); i+=3) 
     {
@@ -154,6 +159,9 @@ void lrcs_mutation(single & a, single &result, double Pm, int th, vector<unsigne
     string codon, random_codon, new_cds, cds1, cds2, cds3, CDS, id = "";
     result.cds = a.cds;
     int ret, index;
+
+
+    //printf("[*] Hilo %d: Mutación avariciosa LRCS.\n", th);
     
     for(char &character: curr_lrcs.cds1) cds1 += toupper(character);
     for(char &character: curr_lrcs.cds2) cds2 += toupper(character);  
@@ -209,6 +217,9 @@ void undue_cai_mutation(single &a, single &result, double Pm, int th, vector<uns
     string codon, random_codon, new_cds = "", id = "";
     string CDS;
     int size, c=0;
+
+
+    //printf("[*] Hilo %d: Mutación óptima CAI.\n", th);
     
     for(int c=0; c<a.cds.size(); ++c)
     {
@@ -255,6 +266,9 @@ void undue_mhd_mutation(single &a, single &result, double Pm, int th, vector<uns
     aim curr_HD, curr_mHD=aim_v, best_HD, best_mHD, new_HD, new_mHD;
     best_HD.value=-1;
     best_mHD.value=-1;
+
+
+    //printf("[*] Hilo %d: Mutación óptima MHD.\n", th);
 
     for(int i = 0; i<(int)aim_v.cds1.size(); i+=3) 
     {
@@ -321,6 +335,9 @@ void undue_lrcs_mutation(single &a, single &result, double Pm, int th, vector<un
     for(char &character: curr_lrcs.cds1) cds1 += toupper(character);
     for(char &character: curr_lrcs.cds2) cds2 += toupper(character);  
     for(char &character: curr_lrcs.cds3) cds3 += toupper(character);   
+
+
+    //printf("[*] Hilo %d: Mutación óptima LRCS.\n", th);
     
     for(int i = 0; i<(int)curr_lrcs.cds1.size(); i+=3)
     {   
