@@ -364,7 +364,7 @@ int main(int argc, char const *argv[])
             #pragma omp for schedule(guided) reduction(+: machos)
             for(j=0; j<poblacion;j++)
             {
-                if(population[j].objetives[0] > medias[0] || population[j].objetives[1] > medias[1] || population[j].objetives[2] < medias[2]) population[j].gender = false;
+                if(population[j].objetives[0] > medias[0] && population[j].objetives[1] > medias[1] && population[j].objetives[2] < medias[2]) population[j].gender = false;
                 else{
                     population[j].gender = true;
                     machos++;
@@ -391,7 +391,6 @@ int main(int argc, char const *argv[])
                 /* aumento de edad */
                 if(dominates(population[j+poblacion], population[j])) population[j].age=0;
                 else population[j].age++;
-
             } 
             
             /* reset de los elefantes viejos */
