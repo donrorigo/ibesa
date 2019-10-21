@@ -46,7 +46,7 @@ void random_mutation(single &a, single &result, double Pm, int th, vector<unsign
     id += to_string(result.objetives[2]);
     result.id = id;
     result.fitness = 0;
-    result.age = 0;
+    result.age = a.age;
     result.gender = a.gender;
     
     return;
@@ -83,7 +83,7 @@ void cai_mutation(single & a, single & result, double Pm, int th, vector<unsigne
     id += to_string(result.objetives[2]);
     result.id = id;
     result.fitness = 0;
-    result.age = 0;
+    result.age = a.age;
     result.gender = a.gender;
 
     return;
@@ -147,7 +147,7 @@ void mhd_mutation(single & a, single &result, double Pm, int th, vector<unsigned
     id += to_string(result.objetives[2]);
     result.id = id;
     result.fitness = 0;
-    result.age = 0;
+    result.age = a.age;
     result.gender = a.gender;
 
     return;
@@ -204,7 +204,7 @@ void lrcs_mutation(single & a, single &result, double Pm, int th, vector<unsigne
     id += to_string(result.objetives[2]);
     result.id = id;
     result.fitness = 0;
-    result.age = 0;
+    result.age = a.age;
     result.gender = a.gender;
     
     return;
@@ -251,7 +251,7 @@ void undue_cai_mutation(single &a, single &result, double Pm, int th, vector<uns
     id += to_string(result.objetives[2]);
     result.id = id;
     result.fitness = 0;
-    result.age = 0;
+    result.age = a.age;
     result.gender = a.gender;
     
     return;
@@ -318,7 +318,7 @@ void undue_mhd_mutation(single &a, single &result, double Pm, int th, vector<uns
     id += to_string(result.objetives[2]);
     result.id = id;
     result.fitness = 0;
-    result.age = 0;  
+    result.age = a.age;  
     result.gender = a.gender;
 
     return;
@@ -375,7 +375,7 @@ void undue_lrcs_mutation(single &a, single &result, double Pm, int th, vector<un
     id += to_string(result.objetives[2]);
     result.id = id;
     result.fitness = 0;
-    result.age = 0;
+    result.age = a.age;
     result.gender = a.gender;
     
     return;

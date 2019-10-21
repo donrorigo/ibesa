@@ -87,11 +87,7 @@ double compute_hypervolume(vector<range> &bounds, single a, single b, int d, boo
 double compute_indicator(vector<range> &bounds, single a, single b)
 /* calcula el valor del indicador, únicamente; no confundir con el sumatorio*/
 {
-    double indicator_val;
-    
-    if (dominates(a, b)) indicator_val = -compute_hypervolume(bounds, a, b, 3, false);
-    else indicator_val = compute_hypervolume(bounds, b, a, 3, false);
-    return indicator_val;
+    return (dominates(a, b) == 1) ? -compute_hypervolume(bounds, a, b, 3, false) : compute_hypervolume(bounds, b, a, 3, false);    
 }
 
 void compute_fitnesscomponents(vector<single> &population, vector<vector<double> > &indicators, vector<range> &bounds)

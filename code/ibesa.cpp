@@ -389,16 +389,17 @@ int main(int argc, char const *argv[])
                 }else random_mutation(population[j], population[j+poblacion], RANDOMMUTATION, id_th, random_vector, auxiliar_cdss);
                 
                 /* aumento de edad */
-                if(dominates(population[j+poblacion], population[j])) population[j].age=0;
+                if(dominates(population[j+poblacion], population[j]) == 1) population[j].age=0;
                 else population[j].age++;
             } 
             
             /* reset de los elefantes viejos */
-            #pragma omp for schedule(guided) reduction(+: old)
+            #pragma omp for schedule(guided) reduction(+: old, optimum_util)
             for(j=0; j<2*poblacion; ++j)  /* mutaciones óptimas */
             { 
                 if(population[j].age == OLD) 
                 {
+                    old++;
                     printf("[OLD] Mutación óptima con el hilo %d\n", id_th);
                     optimum_mutations[rand_r(&random_vector[id_th])%3](population[j], optimum_mutated[id_th], rand_r(&random_vector[id_th])% 5 + GREEDYMUTATION, id_th, random_vector, auxiliar_cdss);
                     if(dominates(optimum_mutated[id_th], population[j]) == 1) population[j]=optimum_mutated[id_th]; 
@@ -437,13 +438,13 @@ int main(int argc, char const *argv[])
     /* creación del frente de pareto */
     volatile bool dominated;
 
-    for(i=0; i<2*poblacion; ++i)
+    for(i=0; i<solutions.size(); ++i)
     {
         dominated = false;
 
         /* control de elefante dominado */
         #pragma omp parallel for shared(dominated) 
-        for(j=0; j<2*poblacion; ++j)
+        for(j=0; j<solutions.size(); ++j)
         {
             if(dominated) continue;
             if(dominates(solutions[j], solutions[i]) == 1) dominated = true; 
