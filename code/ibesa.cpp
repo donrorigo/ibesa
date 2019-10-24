@@ -262,9 +262,13 @@ void show_population(void)
 }
 
 void export2file_mh()
+/* exportación de los datos de debug al fichero utility.txt */
 {
     ofstream fs("utility.txt");
     int machos, hembras;
+    float m, h, o, g, opt;
+    m=h=o=g=opt=0;
+
     for(int i=0; i<howmany.size(); ++i)
     {
         machos = howmany[i].first;
@@ -276,7 +280,20 @@ void export2file_mh()
         fs << "       Número de elefantes fallecidos por edad: " << oldest[i] << endl;
         fs << "       Número de «greedy mutations» que no sirven: " << nonutility[i] << endl;
         fs << "       Número de «optimum mutations» que no han servido: " << optimum_utility[i] << endl << endl;
+        m+=howmany[i].first;
+        h+=howmany[i].second;
+        o+=oldest[i];
+        g+=nonutility[i];
+        opt+=optimum_utility[i];
     } 
+
+    fs << "\n\n\n [?] PORCENTAJES DEL LANZAMIENTO: " << endl;
+    fs << " [*] PORCENTAJE DE MACHOS: " << ((m/10000)*100) << endl;
+    fs << " [*] PORCENTAJE DE HEMBRAS: " << ((h/10000)*100) << endl;
+    fs << " [*] PORCENTAJE DE ELEFANTES FALLECIDOS: " << ((o/10000)*100) << endl;
+    fs << " [*] PORCENTAJE DE 'GREEDY MUTATIONS' SIN UTILIDAD: " << ((g/h)*100) << endl;
+    fs << " [*] PORCENTAJE DE 'OPTIMUM MUTATIONS' SIN UTILIDAD: " << ((opt/o)*100) << endl;
+    
     fs.close();
     return;
 }
@@ -385,12 +402,12 @@ int main(int argc, char const *argv[])
                         random_mutation(population[j], population[j+poblacion], RANDOMMUTATION, id_th, random_vector, auxiliar_cdss); 
                         nonutil++;
                     }
+                    
                 
                 }else random_mutation(population[j], population[j+poblacion], RANDOMMUTATION, id_th, random_vector, auxiliar_cdss);
                 
-                /* aumento de edad */
-                if(dominates(population[j+poblacion], population[j]) == 1) population[j].age=0;
-                else population[j].age++;
+                /* aumento de edad: si el nuevo elefante no domina al anterior se aumenta la edad del anterior */
+                if(!(dominates(population[j+poblacion], population[j]) == 1)) population[j].age++;
             } 
             
             /* reset de los elefantes viejos */
@@ -401,11 +418,11 @@ int main(int argc, char const *argv[])
                 {
                     old++;
                     printf("[OLD] Mutación óptima con el hilo %d\n", id_th);
-                    optimum_mutations[rand_r(&random_vector[id_th])%3](population[j], optimum_mutated[id_th], rand_r(&random_vector[id_th])% 5 + GREEDYMUTATION, id_th, random_vector, auxiliar_cdss);
+                    optimum_mutations[rand_r(&random_vector[id_th])%3](population[j], optimum_mutated[id_th], rand_r(&random_vector[id_th])% 5 + (GREEDYMUTATION-40), id_th, random_vector, auxiliar_cdss);
                     if(dominates(optimum_mutated[id_th], population[j]) == 1) population[j]=optimum_mutated[id_th]; 
                     else
                     {
-                        random_mutation(population[j], population[j], 2*RANDOMMUTATION, id_th, random_vector, auxiliar_cdss); 
+                        random_mutation(population[j], population[j], 2+RANDOMMUTATION, id_th, random_vector, auxiliar_cdss); 
                         optimum_util++;
                     }
                 }
@@ -460,6 +477,8 @@ int main(int argc, char const *argv[])
             }
         }
     }
+
+   
 
     /* escritura en fichero */
     write_results(code);

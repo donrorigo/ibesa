@@ -66,7 +66,6 @@ double compute_hypervolume(vector<range> &bounds, single a, single b, int d, boo
     A = a.objetives[d - 1];
     if (flag) B = max;
     else B = b.objetives[d - 1];
-    assert(d > 0);
 
     if (d == 1){
 	    if (A < B) volume = (B - A) / r;
@@ -104,8 +103,8 @@ void compute_fitnesscomponents(vector<single> &population, vector<vector<double>
 	        indicators[i][j] = compute_indicator(bounds, population[i], population[j]);
             #pragma omp critical
             {
-	        if (maximum_absindicator < fabs(indicators[i][j])) 
-            maximum_absindicator = fabs(indicators[i][j]);   
+                if (maximum_absindicator < fabs(indicators[i][j])) 
+                maximum_absindicator = fabs(indicators[i][j]);   
             }
 	    }
     }
