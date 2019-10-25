@@ -312,7 +312,7 @@ int main(int argc, char const *argv[])
 */
 {
     /* definición de variables e inicialización */
-    int j, i=0;
+    int i=0;
     double medias[3];
     int poblacion = atoi(argv[1]), epochs = atoi(argv[2]), total_cds = stoi(argv[6]);
     string aminoacids = argv[5];
@@ -326,12 +326,11 @@ int main(int argc, char const *argv[])
     cout << "[*] Proteína " << code << " iniciada." << endl; 
 
     /* reserva de memoria */
-    population.reserve(poblacion*2);
-    bounds.reserve(3);
+    
     indicators.reserve(poblacion*2);
+    bounds.reserve(3);
     for(int i=0; i<poblacion*2; ++i) indicators[i].reserve(poblacion*2);       
-    random_vector.reserve(hilos);
-    for(int th=0; th<hilos; ++th) random_vector[th] = seed+th;
+    for(int th=0; th<hilos; ++th) random_vector.push_back(seed+th);
 
     /* inicialización de la población */
     create_superCAI(total_cds, aminoacids);
@@ -339,8 +338,7 @@ int main(int argc, char const *argv[])
     for(int th=0; th<hilos; ++th) optimum_mutated.push_back(population[0]);
     
     /* inicialización del vector auxiliar */
-    auxiliar_cdss.resize(hilos);
-    for(int th = 0; th < hilos; ++th) auxiliar_cdss[th] = population[0].cds;
+    for(int th = 0; th < hilos; ++th) auxiliar_cdss.push_back(population[0].cds);
 
     /* inicialización de las estructuras de estadistica */
     for(int n=0; n<poblacion; ++n)
@@ -364,17 +362,17 @@ int main(int argc, char const *argv[])
                 machos = old = nonutil = optimum_util = 0;
             }
 
-            /* calculo de la métrica de calidad */
-            #pragma omp for schedule(guided)   
-            for(j=0; j<poblacion;j++)
-            {
-                medias[0]+=population[j].objetives[0];
-                medias[1]+=population[j].objetives[1];
-                medias[2]+=population[j].objetives[2];
-            }
+            /* calculo de la métrica de calidad */  
 
             #pragma omp single
             {
+                for(int j=0; j<poblacion;j++)
+                {
+                    medias[0]+=population[j].objetives[0];
+                    medias[1]+=population[j].objetives[1];
+                    medias[2]+=population[j].objetives[2];
+                }
+                
                 medias[0]/=(double)poblacion;
                 medias[1]/=(double)poblacion;
                 medias[2]/=(double)poblacion;   
@@ -382,24 +380,25 @@ int main(int argc, char const *argv[])
             
             /* elección de sexo */
             #pragma omp for schedule(guided) reduction(+: machos)
-            for(j=0; j<poblacion;j++)
+            for(int j=0; j<poblacion;j++)
             {
-                if(population[j].objetives[0] > medias[0] && population[j].objetives[1] > medias[1] && population[j].objetives[2] < medias[2]) population[j].gender = false;
+                if(population[j].objetives[0] > medias[0] || population[j].objetives[1] > medias[1] || population[j].objetives[2] < medias[2]) population[j].gender = false;
                 else{
                     population[j].gender = true;
                     machos++;
                 } 
             }
 
+
             #pragma omp single
             {
-                printf("[*] Principio de las mutaciones\n");
+                printf("    [START] Principio de las mutaciones\n");
                 fflush(stdout);
             }
 
             /* mutaciones */
             #pragma omp for schedule(guided) reduction(+: nonutil)   
-            for(j=0; j<poblacion;j++)
+            for(int j=0; j<poblacion;j++)
             {
                 if (!population[j].gender) {
                     greedy_mutations[rand_r(&random_vector[id_th])%3](population[j], population[j+poblacion], GREEDYMUTATION, id_th, random_vector, auxiliar_cdss);
@@ -420,14 +419,14 @@ int main(int argc, char const *argv[])
 
             #pragma omp single
             {
-                printf("[*] Fin de las mutaciones\n");
-                printf("[*] Inicio de las mutaciones óptimas\n");
+                printf("    [END] Fin de las mutaciones\n");
+                printf("    [START] Inicio de las mutaciones óptimas\n");
                 fflush(stdout);
             }
             
             /* reset de los elefantes viejos */
             #pragma omp for schedule(guided) reduction(+: old, optimum_util)
-            for(j=0; j<2*poblacion; ++j)  /* mutaciones óptimas */
+            for(int j=0; j<2*poblacion; ++j)  /* mutaciones óptimas */
             { 
                 if(population[j].age == OLD) 
                 {
@@ -444,7 +443,8 @@ int main(int argc, char const *argv[])
 
             #pragma omp single
             {
-                printf("[*] Fin de las mutaciones óptimas\n");
+                printf("    [END] Fin de las mutaciones óptimas\n");
+                printf("    [START] Inicio del cálculo de fitness\n");
                 fflush(stdout);
             }
             
@@ -452,6 +452,11 @@ int main(int argc, char const *argv[])
             try
             {
                 compute_fitness(population, indicators, bounds);
+                #pragma omp single
+                {
+                    printf("    [END] Fin del cálculo de fitness\n");
+                    fflush(stdout);
+                }
             }
             catch(const std::exception& e)
             {
@@ -496,7 +501,7 @@ int main(int argc, char const *argv[])
 
         /* control de elefante dominado */
         #pragma omp parallel for shared(dominated) 
-        for(j=0; j<solutions.size(); ++j)
+        for(int j=0; j<solutions.size(); ++j)
         {
             if(dominated) continue;
             if(dominates(solutions[j], solutions[i]) == 1) dominated = true; 
