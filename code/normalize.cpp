@@ -12,9 +12,15 @@ using namespace std;
 
 int main(int argc, char const *argv[])
 {
+    if(argc != 4) 
+    {
+        cout << "El formato debe ser: ./" << argv[0] << " fichero.txt 'codigo de la proteina' 'numero de normalizado' " << endl;
+        return 1;
+    }
     int j;
     double size;
     string file = argv[1], sequence, code = argv[2];
+    float number = std::stof(argv[3]);
 
     std::vector<std::string> result;
     ofstream output("NORMALIZADO: " + code);
@@ -34,7 +40,7 @@ int main(int argc, char const *argv[])
                 output << result[i] << " ";
                 break;
             case 1:
-                output << (stod(result[i])/0.35) << " ";
+                output << (stod(result[i])/number) << " ";
                 break;
             case 2:
                 output << result[i] << endl;

@@ -58,33 +58,42 @@ void cai_mutation(single & a, single & result, double Pm, int th, vector<unsigne
     string codon, random_codon, new_cds = "", CDS = mCAI(a.cds).cds1, id = "";
 
     //printf("[*] Hilo %d: Mutación avariciosa CAI.\n", th);
-
-    for(int i = 0; i<(int)CDS.size(); i+=3)
+    try
     {
-        codon = CDS.substr(i,3);   
-        if(rand_r(&random_vector[th]) % 100 < Pm && amino_weights[codon] != 1)  
+        for(int i = 0; i<(int)CDS.size(); i+=3)
         {
-            do{
-                random_codon = amino_codons[which_amino[codon]][rand_r(&random_vector[th])%amino_codons[which_amino[codon]].size()];
-                if(amino_weights[random_codon] > amino_weights[codon])  new_cds += random_codon;                
-            }while(amino_weights[random_codon] < amino_weights[codon] || random_codon == codon);
-        }else{
-            new_cds += codon;
-        }      
-    }
+            codon = CDS.substr(i,3);   
+            if(rand_r(&random_vector[th]) % 100 < Pm && amino_weights[codon] != 1)  
+            {
+                do{
+                    random_codon = amino_codons[which_amino[codon]][rand_r(&random_vector[th])%amino_codons[which_amino[codon]].size()];
+                    if(amino_weights[random_codon] > amino_weights[codon])  new_cds += random_codon;                
+                }while(amino_weights[random_codon] < amino_weights[codon] || random_codon == codon);
+            }else{
+                new_cds += codon;
+            }      
+        }
 
-    update_CDSs(a.cds, new_cds, CDS, auxiliar_cdss[th]);
-    update_vector(auxiliar_cdss[th], result.cds);
-    result.objetives[0] = (mCAI(result.cds).value);
-    id += to_string(result.objetives[0]);
-    result.objetives[1] = (mHD(result.cds).value);
-    id += to_string(result.objetives[1]);
-    result.objetives[2] = (mlrcs(result.cds).value);
-    id += to_string(result.objetives[2]);
-    result.id = id;
-    result.fitness = 0;
-    result.age = a.age;
-    result.gender = a.gender;
+        update_CDSs(a.cds, new_cds, CDS, auxiliar_cdss[th]);
+        update_vector(auxiliar_cdss[th], result.cds);
+        result.objetives[0] = (mCAI(result.cds).value);
+        id += to_string(result.objetives[0]);
+        result.objetives[1] = (mHD(result.cds).value);
+        id += to_string(result.objetives[1]);
+        result.objetives[2] = (mlrcs(result.cds).value);
+        id += to_string(result.objetives[2]);
+        result.id = id;
+        result.fitness = 0;
+        result.age = a.age;
+        result.gender = a.gender;
+        
+    }
+    catch(const std::exception& e)
+    {
+        std::cerr << "[DANGER] Mutación avariciosa CAI ha provocado la siguiente excepción: " << e.what() << '\n';
+    }
+    
+
 
     return;
 }
@@ -97,55 +106,62 @@ void mhd_mutation(single & a, single &result, double Pm, int th, vector<unsigned
     aim curr_HD, curr_mHD=aim_v, best_HD, best_mHD, new_HD, new_mHD;
     best_HD.value=-1;
     best_mHD.value=-1;
-
-    //printf("[*] Hilo %d: Mutación avariciosa MHD.\n", th);
-
-    for(int i = 0; i<(int)aim_v.cds1.size(); i+=3) 
+    try
     {
-        codon = aim_v.cds1.substr(i,3);
-        if(rand_r(&random_vector[th]) % 100 < Pm &&  amino_codons[which_amino[codon]].size() > 1)
+        for(int i = 0; i<(int)aim_v.cds1.size(); i+=3) 
         {
-            curr_HD.value = HD(aim_v.cds1,aim_v.cds2);
-
-            for(string new_codon : amino_codons[which_amino[codon]])
+            codon = aim_v.cds1.substr(i,3);
+            if(rand_r(&random_vector[th]) % 100 < Pm &&  amino_codons[which_amino[codon]].size() > 1)
             {
-                if(new_codon != codon)
+                curr_HD.value = HD(aim_v.cds1,aim_v.cds2);
+
+                for(string new_codon : amino_codons[which_amino[codon]])
                 {
-                    new_CDS1 = change_CDS(aim_v.cds1, new_codon, i);
-                    new_HD.value = HD(new_CDS1, aim_v.cds2);
-                    update_CDSs(a.cds, new_CDS1, aim_v.cds1, auxiliar_cdss[th]);
-                    new_mHD = mHD(auxiliar_cdss[th]);
-                    if(new_mHD.value > curr_mHD.value && new_mHD.value > best_mHD.value)
+                    if(new_codon != codon)
                     {
-                        best_mHD = new_mHD;
-                        best_codon = new_codon;
-                    }else if (best_mHD.value == -1 && new_mHD.value == curr_mHD.value && new_HD.value > curr_HD.value && new_HD.value > best_HD.value)
-                    {
-                        best_HD = new_HD;
-                        best_codon = new_codon;
+                        new_CDS1 = change_CDS(aim_v.cds1, new_codon, i);
+                        new_HD.value = HD(new_CDS1, aim_v.cds2);
+                        update_CDSs(a.cds, new_CDS1, aim_v.cds1, auxiliar_cdss[th]);
+                        new_mHD = mHD(auxiliar_cdss[th]);
+                        if(new_mHD.value > curr_mHD.value && new_mHD.value > best_mHD.value)
+                        {
+                            best_mHD = new_mHD;
+                            best_codon = new_codon;
+                        }else if (best_mHD.value == -1 && new_mHD.value == curr_mHD.value && new_HD.value > curr_HD.value && new_HD.value > best_HD.value)
+                        {
+                            best_HD = new_HD;
+                            best_codon = new_codon;
+                        }
                     }
                 }
+
+                if(best_mHD.value != -1 || best_HD.value != -1){
+                    new_CDS1 = change_CDS(aim_v.cds1, best_codon, i);
+                    update_CDSs(a.cds, new_CDS1, aim_v.cds1, auxiliar_cdss[th]);
+                    update_vector(auxiliar_cdss[th], result.cds); 
+                }
+
+                best_mHD.value = -1;
+                best_HD.value = -1;
             }
 
-            if(best_mHD.value != -1 || best_HD.value != -1){
-                new_CDS1 = change_CDS(aim_v.cds1, best_codon, i);
-                update_CDSs(a.cds, new_CDS1, aim_v.cds1, auxiliar_cdss[th]);
-                update_vector(auxiliar_cdss[th], result.cds); 
-            }
-
-            best_mHD.value = -1;
-            best_HD.value = -1;
         }
 
+        result.objetives[0] = (mCAI(result.cds).value);
+        id += to_string(result.objetives[0]);
+        result.objetives[1] = (mHD(result.cds).value);               
+        id += to_string(result.objetives[1]);
+        result.objetives[2] = (mlrcs(result.cds).value);
+        id += to_string(result.objetives[2]);
+        result.id = id;
     }
+    catch(const std::exception& e)
+    {
+        std::cerr << "[DANGER] Mutación avariciosa MHD ha provocado la siguiente excepción: " << e.what() << '\n';
+    }
+    
+    //printf("[*] Hilo %d: Mutación avariciosa MHD.\n", th);
 
-    result.objetives[0] = (mCAI(result.cds).value);
-    id += to_string(result.objetives[0]);
-    result.objetives[1] = (mHD(result.cds).value);               
-    id += to_string(result.objetives[1]);
-    result.objetives[2] = (mlrcs(result.cds).value);
-    id += to_string(result.objetives[2]);
-    result.id = id;
     result.fitness = 0;
     result.age = a.age;
     result.gender = a.gender;
@@ -160,49 +176,56 @@ void lrcs_mutation(single & a, single &result, double Pm, int th, vector<unsigne
     result.cds = a.cds;
     int ret, index;
 
+    try
+    {
+        for(char &character: curr_lrcs.cds1) cds1 += toupper(character);
+        for(char &character: curr_lrcs.cds2) cds2 += toupper(character);  
+        for(char &character: curr_lrcs.cds3) cds3 += toupper(character);   
 
-    //printf("[*] Hilo %d: Mutación avariciosa LRCS.\n", th);
+        for(int i = 0; i<(int)curr_lrcs.cds1.size(); i+=3)
+        {   
+            /* cálculo del índice donde se encuentra, el CDS y el codon correspondientes */
+            ret = ((curr_lrcs.index!=0) ? a.cds[0].length()%curr_lrcs.index : 0)%3;
+            CDS = (curr_lrcs.index>=a.cds[0].length()) ? cds3 : cds2;
+            index = (curr_lrcs.index>=a.cds[0].length()) ? curr_lrcs.index-(a.cds[0].length()) : curr_lrcs.index;
+            codon = (ret!=0) ? CDS.substr((index+i-ret),3) : CDS.substr((index+i),3);
     
-    for(char &character: curr_lrcs.cds1) cds1 += toupper(character);
-    for(char &character: curr_lrcs.cds2) cds2 += toupper(character);  
-    for(char &character: curr_lrcs.cds3) cds3 += toupper(character);   
-
-    for(int i = 0; i<(int)curr_lrcs.cds1.size(); i+=3)
-    {   
-        /* cálculo del índice donde se encuentra, el CDS y el codon correspondientes */
-        ret = ((curr_lrcs.index!=0) ? a.cds[0].length()%curr_lrcs.index : 0)%3;
-        CDS = (curr_lrcs.index>=a.cds[0].length()) ? cds3 : cds2;
-        index = (curr_lrcs.index>=a.cds[0].length()) ? curr_lrcs.index-(a.cds[0].length()) : curr_lrcs.index;
-        codon = (ret!=0) ? CDS.substr((index+i-ret),3) : CDS.substr((index+i),3);
-  
-        if(rand_r(&random_vector[th]) % 100 < Pm && amino_codons[which_amino[codon]].size() > 1)
-        {
-            for(string random_codon : amino_codons[which_amino[codon]])
+            if(rand_r(&random_vector[th]) % 100 < Pm && amino_codons[which_amino[codon]].size() > 1)
             {
-                if(random_codon != codon)
+                for(string random_codon : amino_codons[which_amino[codon]])
                 {
-                    new_cds = ""; 
-                    new_cds = change_CDS(CDS, random_codon, ((ret!=0) ? (index+i-ret): (index+i)));
-                    update_CDSs(a.cds, new_cds, CDS, auxiliar_cdss[th]);
-                    new_lrcs = mlrcs(auxiliar_cdss[th]);
-                    if(new_lrcs.value < curr_lrcs.value)
+                    if(random_codon != codon)
                     {
-                        update_vector(auxiliar_cdss[th], result.cds);
-                        curr_lrcs.value = new_lrcs.value;    
+                        new_cds = ""; 
+                        new_cds = change_CDS(CDS, random_codon, ((ret!=0) ? (index+i-ret): (index+i)));
+                        update_CDSs(a.cds, new_cds, CDS, auxiliar_cdss[th]);
+                        new_lrcs = mlrcs(auxiliar_cdss[th]);
+                        if(new_lrcs.value < curr_lrcs.value)
+                        {
+                            update_vector(auxiliar_cdss[th], result.cds);
+                            curr_lrcs.value = new_lrcs.value;    
+                        }
                     }
                 }
             }
+
         }
 
+        result.objetives[0] = (mCAI(result.cds).value);
+        id += to_string(result.objetives[0]);
+        result.objetives[1] = (mHD(result.cds).value);
+        id += to_string(result.objetives[1]);
+        result.objetives[2] = curr_lrcs.value;
+        id += to_string(result.objetives[2]);
+        result.id = id;
     }
-
-    result.objetives[0] = (mCAI(result.cds).value);
-    id += to_string(result.objetives[0]);
-    result.objetives[1] = (mHD(result.cds).value);
-    id += to_string(result.objetives[1]);
-    result.objetives[2] = curr_lrcs.value;
-    id += to_string(result.objetives[2]);
-    result.id = id;
+    catch(const std::exception& e)
+    {
+        std::cerr << "[DANGER] Mutación avariciosa LRCS ha provocado la siguiente excepción: " << e.what() << '\n';
+    }
+    
+    //printf("[*] Hilo %d: Mutación avariciosa LRCS.\n", th);
+    
     result.fitness = 0;
     result.age = a.age;
     result.gender = a.gender;
@@ -220,36 +243,42 @@ void undue_cai_mutation(single &a, single &result, double Pm, int th, vector<uns
 
 
     //printf("[*] Hilo %d: Mutación óptima CAI.\n", th);
-    
-    for(int c=0; c<a.cds.size(); ++c)
+    try
     {
-        CDS = a.cds[c]; 
-        for(int i = 0; i<(int)CDS.size(); i+=3)
+        
+        for(int c=0; c<a.cds.size(); ++c)
         {
-            codon = CDS.substr(i,3);
-            size = amino_codons[which_amino[codon]].size();
-
-            if(rand_r(&random_vector[th]) % 100 < Pm && amino_weights[codon] != 1)
+            CDS = a.cds[c]; 
+            for(int i = 0; i<(int)CDS.size(); i+=3)
             {
-                do{
-                    random_codon = amino_codons[which_amino[codon]][rand_r(&random_vector[th])%size];
-                    if(amino_weights[random_codon] == 1)  new_cds += random_codon;                
-                }while(amino_weights[random_codon] != 1);
-            }else new_cds += codon;
+                codon = CDS.substr(i,3);
+                size = amino_codons[which_amino[codon]].size();
+
+                if(rand_r(&random_vector[th]) % 100 < Pm && amino_weights[codon] != 1)
+                {
+                    do{
+                        random_codon = amino_codons[which_amino[codon]][rand_r(&random_vector[th])%size];
+                        if(amino_weights[random_codon] == 1)  new_cds += random_codon;                
+                    }while(amino_weights[random_codon] != 1);
+                }else new_cds += codon;
+            }
+            result.cds[c] = (new_cds);
+            new_cds = "";
         }
 
-        result.cds[c] = (new_cds);
-        new_cds = "";
+        
+        result.objetives[0] = (mCAI(result.cds).value);
+        id += to_string(result.objetives[0]);
+        result.objetives[1] = (mHD(result.cds).value);               
+        id += to_string(result.objetives[1]);
+        result.objetives[2] = (mlrcs(result.cds).value);
+        id += to_string(result.objetives[2]);
+        result.id = id;
     }
-
-    
-    result.objetives[0] = (mCAI(result.cds).value);
-    id += to_string(result.objetives[0]);
-    result.objetives[1] = (mHD(result.cds).value);               
-    id += to_string(result.objetives[1]);
-    result.objetives[2] = (mlrcs(result.cds).value);
-    id += to_string(result.objetives[2]);
-    result.id = id;
+    catch(const std::exception& e)
+    {
+        std::cerr << "[DANGER] Mutación óptima CAI ha provocado la siguiente excepción: " << e.what() << '\n';
+    }
     result.fitness = 0;
     result.age = a.age;
     result.gender = a.gender;
@@ -270,52 +299,61 @@ void undue_mhd_mutation(single &a, single &result, double Pm, int th, vector<uns
 
     //printf("[*] Hilo %d: Mutación óptima MHD.\n", th);
 
-    for(int i = 0; i<(int)aim_v.cds1.size(); i+=3) 
+    try
     {
-        codon = aim_v.cds1.substr(i,3);
-        if(rand_r(&random_vector[th]) % 100 < Pm &&  amino_codons[which_amino[codon]].size() > 1)
+        for(int i = 0; i<(int)aim_v.cds1.size(); i+=3) 
         {
-            curr_HD.value = HD(aim_v.cds1, aim_v.cds2);
-
-            for(string new_codon : amino_codons[which_amino[codon]])
+            codon = aim_v.cds1.substr(i,3);
+            if(rand_r(&random_vector[th]) % 100 < Pm &&  amino_codons[which_amino[codon]].size() > 1)
             {
-                if(new_codon != codon)
+                curr_HD.value = HD(aim_v.cds1, aim_v.cds2);
+
+                for(string new_codon : amino_codons[which_amino[codon]])
                 {
-                    new_CDS1 = change_CDS(aim_v.cds1, new_codon, i);
-                    new_HD.value = HD(new_CDS1, aim_v.cds2);
-                    update_CDSs(a.cds, new_CDS1, aim_v.cds1, auxiliar_cdss[th]);
-                    new_mHD = mHD(auxiliar_cdss[th]);
-                    if(new_mHD.value > curr_mHD.value && new_mHD.value > best_mHD.value)
+                    if(new_codon != codon)
                     {
-                        best_mHD = new_mHD;
-                        best_codon = new_codon;
-                    }else if (best_mHD.value == -1 && new_mHD.value == curr_mHD.value && new_HD.value > curr_HD.value && new_HD.value > best_HD.value)
-                    {
-                        best_HD = new_HD;
-                        best_codon = new_codon;
+                        new_CDS1 = change_CDS(aim_v.cds1, new_codon, i);
+                        new_HD.value = HD(new_CDS1, aim_v.cds2);
+                        update_CDSs(a.cds, new_CDS1, aim_v.cds1, auxiliar_cdss[th]);
+                        new_mHD = mHD(auxiliar_cdss[th]);
+                        if(new_mHD.value > curr_mHD.value && new_mHD.value > best_mHD.value)
+                        {
+                            best_mHD = new_mHD;
+                            best_codon = new_codon;
+                        }else if (best_mHD.value == -1 && new_mHD.value == curr_mHD.value && new_HD.value > curr_HD.value && new_HD.value > best_HD.value)
+                        {
+                            best_HD = new_HD;
+                            best_codon = new_codon;
+                        }
                     }
                 }
+
+                if(best_mHD.value != -1 || best_HD.value != -1){
+                    new_CDS1 = change_CDS(aim_v.cds1, best_codon, i);
+                    update_CDSs(a.cds, new_CDS1, aim_v.cds1, auxiliar_cdss[th]);
+                    update_vector(auxiliar_cdss[th], result.cds); 
+                    aim_v = (best_mHD.value != -1) ? best_mHD : best_HD;
+                    i = 0;
+                }
+
+                best_mHD.value = -1;
+                best_HD.value = -1;
             }
 
-            if(best_mHD.value != -1 || best_HD.value != -1){
-                new_CDS1 = change_CDS(aim_v.cds1, best_codon, i);
-                update_CDSs(a.cds, new_CDS1, aim_v.cds1, auxiliar_cdss[th]);
-                update_vector(auxiliar_cdss[th], result.cds); 
-                aim_v = (best_mHD.value != -1) ? best_mHD : best_HD;
-                i = 0;
-            }
-
-            best_mHD.value = -1;
-            best_HD.value = -1;
         }
-
+        result.objetives[0] = (mCAI(result.cds).value);
+        id += to_string(result.objetives[0]);
+        result.objetives[1] = curr_mHD.value;
+        id += to_string(result.objetives[1]);
+        result.objetives[2] = (mlrcs(result.cds).value);
+        id += to_string(result.objetives[2]);
     }
-    result.objetives[0] = (mCAI(result.cds).value);
-    id += to_string(result.objetives[0]);
-    result.objetives[1] = curr_mHD.value;
-    id += to_string(result.objetives[1]);
-    result.objetives[2] = (mlrcs(result.cds).value);
-    id += to_string(result.objetives[2]);
+    catch(const std::exception& e)
+    {
+        std::cerr << "[DANGER] Mutación óptima MHD ha provocado la siguiente excepción: " << e.what() << '\n';
+    }
+    
+
     result.id = id;
     result.fitness = 0;
     result.age = a.age;  
@@ -332,47 +370,55 @@ void undue_lrcs_mutation(single &a, single &result, double Pm, int th, vector<un
     result.cds = a.cds;
     int ret, index;
     
-    for(char &character: curr_lrcs.cds1) cds1 += toupper(character);
-    for(char &character: curr_lrcs.cds2) cds2 += toupper(character);  
-    for(char &character: curr_lrcs.cds3) cds3 += toupper(character);   
 
+    try
+    {
+        for(char &character: curr_lrcs.cds1) cds1 += toupper(character);
+        for(char &character: curr_lrcs.cds2) cds2 += toupper(character);  
+        for(char &character: curr_lrcs.cds3) cds3 += toupper(character);   
 
-    //printf("[*] Hilo %d: Mutación óptima LRCS.\n", th);
-    
-    for(int i = 0; i<(int)curr_lrcs.cds1.size(); i+=3)
-    {   
-        ret = ((curr_lrcs.index!=0) ? a.cds[0].length()%curr_lrcs.index : 0)%3;
-        CDS = (curr_lrcs.index>=a.cds[0].length()) ? cds3 : cds2;
-        index = (curr_lrcs.index>=a.cds[0].length()) ? curr_lrcs.index-(a.cds[0].length()) : curr_lrcs.index;
-        codon = (ret!=0) ? CDS.substr((index+i-ret),3) : CDS.substr((index+i),3);
+        for(int i = 0; i<(int)curr_lrcs.cds1.size(); i+=3)
+        {   
+            ret = ((curr_lrcs.index!=0) ? a.cds[0].length()%curr_lrcs.index : 0)%3;
+            CDS = (curr_lrcs.index>=a.cds[0].length()) ? cds3 : cds2;
+            index = (curr_lrcs.index>=a.cds[0].length()) ? curr_lrcs.index-(a.cds[0].length()) : curr_lrcs.index;
+            codon = (ret!=0) ? CDS.substr((index+i-ret),3) : CDS.substr((index+i),3);
 
-        if(amino_codons[which_amino[codon]].size() > 1)
-        {
-            for(string random_codon : amino_codons[which_amino[codon]])
+            if(amino_codons[which_amino[codon]].size() > 1)
             {
-                if(random_codon != codon)
+                for(string random_codon : amino_codons[which_amino[codon]])
                 {
-                    new_cds = change_CDS(CDS, random_codon, ((ret!=0) ? (index+i-ret): (index+i)));
-                    update_CDSs(a.cds, new_cds, CDS, auxiliar_cdss[th]);
-                    new_lrcs = mlrcs(auxiliar_cdss[th]);
-                    if(new_lrcs.value < curr_lrcs.value)
+                    if(random_codon != codon)
                     {
-                        update_vector(auxiliar_cdss[th], result.cds);
-                        curr_lrcs = new_lrcs;
-                        i=0;   
+                        new_cds = change_CDS(CDS, random_codon, ((ret!=0) ? (index+i-ret): (index+i)));
+                        update_CDSs(a.cds, new_cds, CDS, auxiliar_cdss[th]);
+                        new_lrcs = mlrcs(auxiliar_cdss[th]);
+                        if(new_lrcs.value < curr_lrcs.value)
+                        {
+                            update_vector(auxiliar_cdss[th], result.cds);
+                            curr_lrcs = new_lrcs;
+                            i=0;   
+                        }
                     }
                 }
             }
-        }
 
+        }
+        
+        result.objetives[0] = (mCAI(result.cds).value);
+        id += to_string(result.objetives[0]);
+        result.objetives[1] = (mHD(result.cds).value);
+        id += to_string(result.objetives[1]);
+        result.objetives[2] = curr_lrcs.value;
+        id += to_string(result.objetives[2]);
+    }
+    catch(const std::exception& e)
+    {
+        std::cerr << "[DANGER] Mutación óptima LRCS ha provocado la siguiente excepción: " << e.what() << '\n';
     }
     
-    result.objetives[0] = (mCAI(result.cds).value);
-    id += to_string(result.objetives[0]);
-    result.objetives[1] = (mHD(result.cds).value);
-    id += to_string(result.objetives[1]);
-    result.objetives[2] = curr_lrcs.value;
-    id += to_string(result.objetives[2]);
+    //printf("[*] Hilo %d: Mutación óptima LRCS.\n", th);
+    
     result.id = id;
     result.fitness = 0;
     result.age = a.age;

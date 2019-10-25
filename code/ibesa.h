@@ -30,6 +30,7 @@
 
 using namespace std;
 
+string code;
 vector<range> bounds; /* array de límites: [0] = HD, [1] = CAI, [2] = LRCS */
 vector<single> population; /* vector para la poblacion */
 vector<single> optimum_mutated; /* vector auxiliar para las mutaciones optimas */
@@ -46,7 +47,7 @@ static set<string> nonrepeat;
 static void init(int total, string amino_sequence, int CDSs, int machos);
 static void show_cdss(vector<string> CDSs);
 static void sorting_population(vector<single> &vector_pop);
-static void write_results(string code);
+static void write_results();
 static void show_population();
 static void show_single(single a);
 static void create_superCAI(int numC, string sequence);

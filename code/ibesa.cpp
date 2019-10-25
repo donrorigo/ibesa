@@ -197,7 +197,7 @@ void show_cdss(vector<string> CDSs)
     return;
 }
 
-void write_results(string code)
+void write_results()
 /* escribe los elefantes con mejor fitness encontrados */
 {
 
@@ -264,16 +264,18 @@ void show_population(void)
 void export2file_mh()
 /* exportación de los datos de debug al fichero utility.txt */
 {
-    ofstream fs("utility.txt");
+    ofstream fs(code + "utility.txt");
     int machos, hembras;
     float m, h, o, g, opt;
     m=h=o=g=opt=0;
+    
+    fs << "Proteina: " << code << endl << "-------------" << endl;
 
     for(int i=0; i<howmany.size(); ++i)
     {
         machos = howmany[i].first;
         hembras = howmany[i].second;
-        fs << "[!] Epoca "<< i << endl;
+        fs << "[!] Epoca "<< i << endl << endl;
         fs << "       Número de machos y hembras:" << endl;
         fs << "           - machos = " << machos << endl;
         fs << "           - hembras = " << hembras << endl;
@@ -287,12 +289,13 @@ void export2file_mh()
         opt+=optimum_utility[i];
     } 
 
-    fs << "\n\n\n [?] PORCENTAJES DEL LANZAMIENTO: " << endl;
+    fs << "\n\n [?] PORCENTAJES DEL LANZAMIENTO: " << endl;
     fs << " [*] PORCENTAJE DE MACHOS: " << ((m/10000)*100) << endl;
     fs << " [*] PORCENTAJE DE HEMBRAS: " << ((h/10000)*100) << endl;
     fs << " [*] PORCENTAJE DE ELEFANTES FALLECIDOS: " << ((o/10000)*100) << endl;
     fs << " [*] PORCENTAJE DE 'GREEDY MUTATIONS' SIN UTILIDAD: " << ((g/h)*100) << endl;
     fs << " [*] PORCENTAJE DE 'OPTIMUM MUTATIONS' SIN UTILIDAD: " << ((opt/o)*100) << endl;
+    fs << " [*] HIPERVOLUMEN OBTENIDO: " << endl;
     
     fs.close();
     return;
@@ -312,12 +315,13 @@ int main(int argc, char const *argv[])
     int j, i=0;
     double medias[3];
     int poblacion = atoi(argv[1]), epochs = atoi(argv[2]), total_cds = stoi(argv[6]);
-    string code = argv[4],  aminoacids = argv[5];
+    string aminoacids = argv[5];
     greedy_mutations = {lrcs_mutation, mhd_mutation, cai_mutation};
     optimum_mutations = {undue_cai_mutation, undue_mhd_mutation, undue_lrcs_mutation};
     unsigned int seed = time(NULL); 
     int id_th, hilos = omp_get_max_threads();
     volatile int machos, old, nonutil, optimum_util;
+    code = argv[4];
 
     cout << "[*] Proteína " << code << " iniciada." << endl; 
 
@@ -338,7 +342,7 @@ int main(int argc, char const *argv[])
     auxiliar_cdss.resize(hilos);
     for(int th = 0; th < hilos; ++th) auxiliar_cdss[th] = population[0].cds;
 
-    /* inicialización del mapa de machos y hembras */
+    /* inicialización de las estructuras de estadistica */
     for(int n=0; n<poblacion; ++n)
     {
         howmany.insert(std::make_pair(n, std::pair<int,int>(0,0)));
@@ -346,7 +350,6 @@ int main(int argc, char const *argv[])
         nonutility.insert(std::make_pair(n,0));
         optimum_utility.insert(std::make_pair(n,0));
     }
-    
  
     /* inicio del algoritmo */
     #pragma omp parallel private(id_th) shared(machos, old, nonutil, optimum_util)
@@ -381,11 +384,17 @@ int main(int argc, char const *argv[])
             #pragma omp for schedule(guided) reduction(+: machos)
             for(j=0; j<poblacion;j++)
             {
-                if(population[j].objetives[0] > medias[0] || population[j].objetives[1] > medias[1] || population[j].objetives[2] < medias[2]) population[j].gender = false;
+                if(population[j].objetives[0] > medias[0] && population[j].objetives[1] > medias[1] && population[j].objetives[2] < medias[2]) population[j].gender = false;
                 else{
                     population[j].gender = true;
                     machos++;
                 } 
+            }
+
+            #pragma omp single
+            {
+                printf("[*] Principio de las mutaciones\n");
+                fflush(stdout);
             }
 
             /* mutaciones */
@@ -393,22 +402,28 @@ int main(int argc, char const *argv[])
             for(j=0; j<poblacion;j++)
             {
                 if (!population[j].gender) {
-                    
                     greedy_mutations[rand_r(&random_vector[id_th])%3](population[j], population[j+poblacion], GREEDYMUTATION, id_th, random_vector, auxiliar_cdss);
-                    
+
                     /* control de convergencia a una única solución */
                     if (population[j] == population[j+poblacion]) 
                     {
                         random_mutation(population[j], population[j+poblacion], RANDOMMUTATION, id_th, random_vector, auxiliar_cdss); 
                         nonutil++;
                     }
-                    
-                
-                }else random_mutation(population[j], population[j+poblacion], RANDOMMUTATION, id_th, random_vector, auxiliar_cdss);
+                }else{
+                    random_mutation(population[j], population[j+poblacion], RANDOMMUTATION, id_th, random_vector, auxiliar_cdss);
+                } 
                 
                 /* aumento de edad: si el nuevo elefante no domina al anterior se aumenta la edad del anterior */
                 if(!(dominates(population[j+poblacion], population[j]) == 1)) population[j].age++;
             } 
+
+            #pragma omp single
+            {
+                printf("[*] Fin de las mutaciones\n");
+                printf("[*] Inicio de las mutaciones óptimas\n");
+                fflush(stdout);
+            }
             
             /* reset de los elefantes viejos */
             #pragma omp for schedule(guided) reduction(+: old, optimum_util)
@@ -417,8 +432,7 @@ int main(int argc, char const *argv[])
                 if(population[j].age == OLD) 
                 {
                     old++;
-                    printf("[OLD] Mutación óptima con el hilo %d\n", id_th);
-                    optimum_mutations[rand_r(&random_vector[id_th])%3](population[j], optimum_mutated[id_th], rand_r(&random_vector[id_th])% 5 + (GREEDYMUTATION-40), id_th, random_vector, auxiliar_cdss);
+                    optimum_mutations[ rand_r(&random_vector[id_th])%3](population[j], optimum_mutated[id_th], rand_r(&random_vector[id_th])% 5 + (GREEDYMUTATION-40), id_th, random_vector, auxiliar_cdss);
                     if(dominates(optimum_mutated[id_th], population[j]) == 1) population[j]=optimum_mutated[id_th]; 
                     else
                     {
@@ -427,14 +441,35 @@ int main(int argc, char const *argv[])
                     }
                 }
             }
+
+            #pragma omp single
+            {
+                printf("[*] Fin de las mutaciones óptimas\n");
+                fflush(stdout);
+            }
             
             /* cálculo del fitness */
-            compute_fitness(population, indicators, bounds);
+            try
+            {
+                compute_fitness(population, indicators, bounds);
+            }
+            catch(const std::exception& e)
+            {
+                std::cerr << "[DANGER] Excepción a la hora de calcular el fitness: " << e.what() << '\n';
+            }
+            
             
             #pragma omp single
             {
-                sorting_population(population);   /* selección por elitismo (mayor fitness) */
-                std::copy(population.begin()+poblacion, population.end(), std::back_inserter(solutions)); /* guardado de la población mutada */
+                try
+                {
+                    sorting_population(population);   /* selección por elitismo (mayor fitness) */
+                    std::copy(population.begin()+poblacion, population.end(), std::back_inserter(solutions)); /* guardado de la población mutada */
+                }
+                catch(const std::exception& e)
+                {
+                    std::cerr << "[DANGER] Excepción en la ordenación y copiado de la población mutada: "  << e.what() << '\n';
+                }
                 
                 /* actualizado de vectores de utilidad */
                 howmany[i].first = machos;
@@ -481,7 +516,7 @@ int main(int argc, char const *argv[])
    
 
     /* escritura en fichero */
-    write_results(code);
+    write_results();
     export2file_mh();
 
     cout << "[*] Proteína " << code << " terminada.\n" << endl; 
