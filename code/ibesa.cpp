@@ -313,7 +313,6 @@ int main(int argc, char const *argv[])
 {
     /* definición de variables e inicialización */
     int i=0;
-    double medias[3];
     int poblacion = atoi(argv[1]), epochs = atoi(argv[2]), total_cds = stoi(argv[6]);
     string aminoacids = argv[5];
     greedy_mutations = {lrcs_mutation, mhd_mutation, cai_mutation};
@@ -348,9 +347,15 @@ int main(int argc, char const *argv[])
         nonutility.insert(std::make_pair(n,0));
         optimum_utility.insert(std::make_pair(n,0));
     }
+
+    /* calculo del fitness y ordenacion de la primera poblacion */
+    #pragma omp parallel
+    compute_fitness(population, indicators, bounds);
+    sorting_population(population);   /* selección por elitismo (mayor fitness) */
+
  
     /* inicio del algoritmo */
-    #pragma omp parallel private(id_th) shared(machos, old, nonutil, optimum_util, medias)
+    #pragma omp parallel private(id_th) shared(machos, old, nonutil, optimum_util)
     {   
         id_th = omp_get_thread_num();
         while(i < epochs)   
@@ -358,38 +363,16 @@ int main(int argc, char const *argv[])
             #pragma omp single
             {
                 cout << "[!] Generación: " << i  << endl;
-                medias[0]=medias[1]=medias[2]=0.0;
                 machos = old = nonutil = optimum_util = 0;
             }
 
-            /* calculo de la métrica de calidad */  
-            #pragma omp for reduction(+: medias)
-            for(int j=0; j<poblacion;j++)
-            {
-                medias[0]+=population[j].objetives[0];
-                medias[1]+=population[j].objetives[1];
-                medias[2]+=population[j].objetives[2];
-            }
-
-            #pragma omp single
-            {
-                
-                medias[0]/=(double)poblacion;
-                medias[1]/=(double)poblacion;
-                medias[2]/=(double)poblacion;   
-            }
-            
-            /* elección de sexo */
+            /* equilibrado de generos */
             #pragma omp for schedule(guided) reduction(+: machos)
-            for(int j=0; j<poblacion;j++)
-            {
-                if(population[j].objetives[0] > medias[0] || population[j].objetives[1] > medias[1] || population[j].objetives[2] < medias[2]) population[j].gender = false;
-                else{
-                    population[j].gender = true;
-                    machos++;
-                } 
-            }
-
+            for(int j=0; j<poblacion; ++j)  
+            { 
+                population[i].gender = (j<poblacion/2) ? false : true;
+                if(!population[i].gender) machos++;
+            } 
 
             #pragma omp single
             {
@@ -476,7 +459,11 @@ int main(int argc, char const *argv[])
                 {
                     std::cerr << "[DANGER] Excepción en la ordenación y copiado de la población mutada: "  << e.what() << '\n';
                 }
-                
+            }
+
+
+            #pragma omp single
+            {
                 /* actualizado de vectores de utilidad */
                 howmany[i].first = machos;
                 howmany[i].second = poblacion - machos;
@@ -494,7 +481,7 @@ int main(int argc, char const *argv[])
     std::copy(population.begin(), population.end()-poblacion, std::back_inserter(solutions)); 
 
     /* creación del frente de pareto */
-    volatile bool dominated;
+    
 
     for(i=0; i<solutions.size(); ++i)
     {

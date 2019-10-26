@@ -18,14 +18,15 @@
 #include <fstream>
 #include <omp.h>
 #include "datastructure.h"
+#include <atomic>
 
 
 #define KAPPA 0.05 /* variable de escala */ 
 #define RHO 1.1 /* variable auxiliar de hipervolumen */
-#define OLD 7 /* numero de mutaciones donde se considera la solucion estancada */
+#define OLD 3 /* numero de mutaciones donde se considera la solucion estancada */
 #define PROBABILITY 5
-#define RANDOMMUTATION 5
-#define GREEDYMUTATION 70
+#define RANDOMMUTATION 2
+#define GREEDYMUTATION 50
 
 
 using namespace std;
@@ -35,7 +36,6 @@ vector<single> population; /* vector para la poblacion */
 vector<single> optimum_mutated; /* vector auxiliar para las mutaciones optimas */
 vector<single> solutions; /* vector grande de soluciones */
 vector<single> paretofront; /* vector final con el frente de pareto */
-
 vector<range> bounds; /* array de límites: [0] = HD, [1] = CAI, [2] = LRCS */
 vector<vector<double> > indicators;
 
@@ -46,6 +46,7 @@ typedef function<void(single &,single &, int, int, vector<unsigned int> &, vecto
 vector<mutation_function> greedy_mutations;
 vector<mutation_function> optimum_mutations;    
 static set<string> nonrepeat;
+atomic_bool dominated; 
 
 static void init(int total, string amino_sequence, int CDSs, int machos);
 static void show_cdss(vector<string> CDSs);
