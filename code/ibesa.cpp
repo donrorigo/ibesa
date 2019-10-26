@@ -350,7 +350,7 @@ int main(int argc, char const *argv[])
     }
  
     /* inicio del algoritmo */
-    #pragma omp parallel private(id_th) shared(machos, old, nonutil, optimum_util)
+    #pragma omp parallel private(id_th) shared(machos, old, nonutil, optimum_util, medias)
     {   
         id_th = omp_get_thread_num();
         while(i < epochs)   
@@ -363,15 +363,16 @@ int main(int argc, char const *argv[])
             }
 
             /* calculo de la métrica de calidad */  
+            #pragma omp for reduction(+: medias)
+            for(int j=0; j<poblacion;j++)
+            {
+                medias[0]+=population[j].objetives[0];
+                medias[1]+=population[j].objetives[1];
+                medias[2]+=population[j].objetives[2];
+            }
 
             #pragma omp single
             {
-                for(int j=0; j<poblacion;j++)
-                {
-                    medias[0]+=population[j].objetives[0];
-                    medias[1]+=population[j].objetives[1];
-                    medias[2]+=population[j].objetives[2];
-                }
                 
                 medias[0]/=(double)poblacion;
                 medias[1]/=(double)poblacion;
