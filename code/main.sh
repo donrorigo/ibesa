@@ -10,7 +10,7 @@ do
     ./normalize RESULTADOS\:\ $field1 $field1 0.40
     ./hyp_ind hyp_ind_param.txt NORMALIZADO\:\ $field1 null.txt output.txt
     echo "$field1: $(./convert2decimal output.txt)" >> "hypervolumes.txt"
-    echo "$field1: $(./convert2decimal output.txt)" >> $field1"utility.txt"
+    echo "$field1: $(./convert2decimal output.txt)" >> $field1"_utility.txt"
     rm RESULTADOS\:\ $field1 output.txt
     mv $field1.txt NORMALIZADO\:\ $field1 IBEA\ Results/Rep$i
   done < proteins.txt

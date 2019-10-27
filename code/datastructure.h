@@ -17,6 +17,7 @@ typedef struct single_st{
     double fitness;
     int age;
     string id;
+    int lastmutation;
     bool operator==(const single_st& a) { return (id==a.id) ? true : false; }
     single_st& operator =(const single_st& a)
     {

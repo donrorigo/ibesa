@@ -139,6 +139,7 @@ void create_superCAI(int numC, string sequence)
     result.fitness = 0;
     result.age = 0;
     result.gender = true; 
+    result.lastmutation = 0;
     population.push_back(result);
 
     return;
@@ -180,6 +181,7 @@ void init(int total, string amino_sequence, int CDSs, int machos)
         individuo.id = id;
         individuo.fitness = 0;
         individuo.age = 0;
+        individuo.lastmutation = 0;
         individuo.gender = (i < machos) ? true : false; 
         population.push_back(individuo);
     }
@@ -224,47 +226,32 @@ void write_results()
     return;
 }
 
-void show_single(single a)
-/* muestra por consola toda la información del elefante pasado por parámetro */
-{
-    int j= 0;
-    std::cout << " mCAI=" << a.objetives[0] << ",mHD=" << a.objetives[1] << ",lLCS=" << a.objetives[2];
-    std::cout << ",GENDER=" << ((a.gender) ? "male" : "female") << a.age <<",fitness:" << a.fitness << endl;
-    for(string cds : a.cds){
-        std::cout << "CDS-" << j << "   " << cds << endl;
-        j++;
-    } 
-
-    return;
-}
-
-void show_population(void)
+void show_population(int x)
 /* muestra por consola toda la información de la población entera */
 {
+    fstream fs;
+    
+    fs.open(code + "_population.txt", std::fstream::out | std::fstream::app);
     int i=0, j;
-    single result;
 
+    fs << "\nIteracción: " << x << endl;
     for(int n = 0; n < population.size(); ++n)
     {   
-        result = population[n];
         j=0;
-        std::cout << "individual" << i << " mCAI=" << result.objetives[0] << ",mHD=" << result.objetives[1] << ",lLCS=" << result.objetives[2];
-        std::cout << ",GENDER=" << ((result.gender) ? "male" : "female") << ",AGE:" << result.age <<",fitness:" << result.fitness << endl;
-        for(string cds : result.cds){
-            std::cout << "CDS-" << j << "   " << cds << endl;
-            j++;
-        } 
-        std::cout << "//" << endl;
+        fs << "individual" << n << " mCAI=" << population[n].objetives[0] << ",mHD=" << population[n].objetives[1] << ",lLCS=" << population[n].objetives[2];
+        fs << ",GENDER=" << ((population[n].gender) ? "male" : "female") << ",AGE:" << population[n].age <<",fitness:" << population[n].fitness << ", last mutation: " << population[n].lastmutation << endl; 
         i++;
     }
 
+    fs << "//" << endl;
+    fs.close();
     return;
 }
 
 void export2file_mh()
 /* exportación de los datos de debug al fichero utility.txt */
 {
-    ofstream fs(code + "utility.txt");
+    ofstream fs(code + "_utility.txt");
     int machos, hembras;
     float m, h, o, g, opt;
     m=h=o=g=opt=0;
@@ -367,18 +354,11 @@ int main(int argc, char const *argv[])
             }
 
             /* equilibrado de generos */
-            #pragma omp for schedule(guided) reduction(+: machos)
+            #pragma omp for schedule(guided)
             for(int j=0; j<poblacion; ++j)  
             { 
-                population[i].gender = (j<poblacion/2) ? false : true;
-                if(!population[i].gender) machos++;
+                population[j].gender = (j<poblacion/2) ? false : true;
             } 
-
-            #pragma omp single
-            {
-                printf("    [START] Principio de las mutaciones\n");
-                fflush(stdout);
-            }
 
             /* mutaciones */
             #pragma omp for schedule(guided) reduction(+: nonutil)   
@@ -386,7 +366,7 @@ int main(int argc, char const *argv[])
             {
                 if (!population[j].gender) {
                     greedy_mutations[rand_r(&random_vector[id_th])%3](population[j], population[j+poblacion], GREEDYMUTATION, id_th, random_vector, auxiliar_cdss);
-
+                    
                     /* control de convergencia a una única solución */
                     if (population[j] == population[j+poblacion]) 
                     {
@@ -395,18 +375,12 @@ int main(int argc, char const *argv[])
                     }
                 }else{
                     random_mutation(population[j], population[j+poblacion], RANDOMMUTATION, id_th, random_vector, auxiliar_cdss);
+                    machos++;
                 } 
                 
                 /* aumento de edad: si el nuevo elefante no domina al anterior se aumenta la edad del anterior */
                 if(!(dominates(population[j+poblacion], population[j]) == 1)) population[j].age++;
             } 
-
-            #pragma omp single
-            {
-                printf("    [END] Fin de las mutaciones\n");
-                printf("    [START] Inicio de las mutaciones óptimas\n");
-                fflush(stdout);
-            }
             
             /* reset de los elefantes viejos */
             #pragma omp for schedule(guided) reduction(+: old, optimum_util)
@@ -424,43 +398,44 @@ int main(int argc, char const *argv[])
                     }
                 }
             }
-
-            #pragma omp single
-            {
-                printf("    [END] Fin de las mutaciones óptimas\n");
-                printf("    [START] Inicio del cálculo de fitness\n");
-                fflush(stdout);
-            }
             
             /* cálculo del fitness */
             try
             {
                 compute_fitness(population, indicators, bounds);
-                #pragma omp single
-                {
-                    printf("    [END] Fin del cálculo de fitness\n");
-                    fflush(stdout);
-                }
             }
             catch(const std::exception& e)
             {
                 std::cerr << "[DANGER] Excepción a la hora de calcular el fitness: " << e.what() << '\n';
+                exit(1);
             }
-            
             
             #pragma omp single
             {
                 try
                 {
                     sorting_population(population);   /* selección por elitismo (mayor fitness) */
+                    show_population(i);
+                }
+                catch(const std::exception& e)
+                {
+                    std::cerr << "[DANGER] Excepción en la ordenación población: "  << e.what() << '\n';
+                    exit(1);
+                }
+            }
+
+            #pragma omp single
+            {
+                try
+                {
                     std::copy(population.begin()+poblacion, population.end(), std::back_inserter(solutions)); /* guardado de la población mutada */
                 }
                 catch(const std::exception& e)
                 {
-                    std::cerr << "[DANGER] Excepción en la ordenación y copiado de la población mutada: "  << e.what() << '\n';
+                    std::cerr << "[DANGER] Excepción en el copiado de la población mutada: "  << e.what() << '\n';
+                    exit(1);
                 }
             }
-
 
             #pragma omp single
             {
@@ -481,8 +456,6 @@ int main(int argc, char const *argv[])
     std::copy(population.begin(), population.end()-poblacion, std::back_inserter(solutions)); 
 
     /* creación del frente de pareto */
-    
-
     for(i=0; i<solutions.size(); ++i)
     {
         dominated = false;

@@ -48,6 +48,7 @@ void random_mutation(single &a, single &result, double Pm, int th, vector<unsign
     result.fitness = 0;
     result.age = a.age;
     result.gender = a.gender;
+    result.lastmutation = 0;
     
     return;
 }
@@ -86,6 +87,8 @@ void cai_mutation(single & a, single & result, double Pm, int th, vector<unsigne
         result.fitness = 0;
         result.age = a.age;
         result.gender = a.gender;
+        result.lastmutation = 1;
+
         
     }
     catch(const std::exception& e)
@@ -165,6 +168,7 @@ void mhd_mutation(single & a, single &result, double Pm, int th, vector<unsigned
     result.fitness = 0;
     result.age = a.age;
     result.gender = a.gender;
+    result.lastmutation = 2;
 
     return;
 }
@@ -229,6 +233,7 @@ void lrcs_mutation(single & a, single &result, double Pm, int th, vector<unsigne
     result.fitness = 0;
     result.age = a.age;
     result.gender = a.gender;
+    result.lastmutation = 3;
     
     return;
 }
@@ -282,6 +287,7 @@ void undue_cai_mutation(single &a, single &result, double Pm, int th, vector<uns
     result.fitness = 0;
     result.age = a.age;
     result.gender = a.gender;
+    result.lastmutation = 4;
     
     return;
 }
@@ -358,6 +364,7 @@ void undue_mhd_mutation(single &a, single &result, double Pm, int th, vector<uns
     result.fitness = 0;
     result.age = a.age;  
     result.gender = a.gender;
+    result.lastmutation = 5;
 
     return;
 }
@@ -423,6 +430,7 @@ void undue_lrcs_mutation(single &a, single &result, double Pm, int th, vector<un
     result.fitness = 0;
     result.age = a.age;
     result.gender = a.gender;
+    result.lastmutation = 6;
     
     return;
 }

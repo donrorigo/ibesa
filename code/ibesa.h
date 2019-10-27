@@ -23,8 +23,7 @@
 
 #define KAPPA 0.05 /* variable de escala */ 
 #define RHO 1.1 /* variable auxiliar de hipervolumen */
-#define OLD 3 /* numero de mutaciones donde se considera la solucion estancada */
-#define PROBABILITY 5
+#define OLD 2 /* numero de mutaciones donde se considera la solucion estancada */
 #define RANDOMMUTATION 2
 #define GREEDYMUTATION 50
 
@@ -52,8 +51,7 @@ static void init(int total, string amino_sequence, int CDSs, int machos);
 static void show_cdss(vector<string> CDSs);
 static void sorting_population(vector<single> &vector_pop);
 static void write_results();
-static void show_population();
-static void show_single(single a);
+static void show_population(int x);
 static void create_superCAI(int numC, string sequence);
 static void export2file_mh();
 
