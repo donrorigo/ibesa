@@ -374,11 +374,11 @@ int main(int argc, char const *argv[])
                     greedy_mutations[rand_r(&random_vector[id_th])%3](population[j], population[j+poblacion], GREEDYMUTATION, id_th, random_vector, auxiliar_cdss);
                     
                     /* control de convergencia a una única solución */
-                    // if (population[j] == population[j+poblacion]) 
-                    // {
-                    //     random_mutation(population[j], population[j+poblacion], RANDOMMUTATION, id_th, random_vector, auxiliar_cdss); 
-                    //     nonutil++;
-                    // }
+                    if (population[j] == population[j+poblacion]) 
+                    {
+                        random_mutation(population[j], population[j+poblacion], RANDOMMUTATION, id_th, random_vector, auxiliar_cdss); 
+                        nonutil++;
+                    }
                 }else{
                     random_mutation(population[j], population[j+poblacion], RANDOMMUTATION, id_th, random_vector, auxiliar_cdss);
                     machos++;
