@@ -6,7 +6,7 @@ Proteina: B7KHU9
            - machos = 50
            - hembras = 50
        Número de elefantes fallecidos por edad: 0
-       Número de «greedy mutations» que no sirven: 12
+       Número de «greedy mutations» que no sirven: 20
        Número de «optimum mutations» que no han servido: 0
 
 [!] Epoca 1
@@ -14,155 +14,65 @@ Proteina: B7KHU9
        Número de machos y hembras:
            - machos = 50
            - hembras = 50
-       Número de elefantes fallecidos por edad: 17
-       Número de «greedy mutations» que no sirven: 8
-       Número de «optimum mutations» que no han servido: 15
+       Número de elefantes fallecidos por edad: 0
+       Número de «greedy mutations» que no sirven: 23
+       Número de «optimum mutations» que no han servido: 0
 
 [!] Epoca 2
 
        Número de machos y hembras:
            - machos = 50
            - hembras = 50
-       Número de elefantes fallecidos por edad: 34
-       Número de «greedy mutations» que no sirven: 19
-       Número de «optimum mutations» que no han servido: 29
+       Número de elefantes fallecidos por edad: 0
+       Número de «greedy mutations» que no sirven: 21
+       Número de «optimum mutations» que no han servido: 0
 
 [!] Epoca 3
 
        Número de machos y hembras:
            - machos = 50
            - hembras = 50
-       Número de elefantes fallecidos por edad: 28
-       Número de «greedy mutations» que no sirven: 16
-       Número de «optimum mutations» que no han servido: 20
+       Número de elefantes fallecidos por edad: 0
+       Número de «greedy mutations» que no sirven: 22
+       Número de «optimum mutations» que no han servido: 0
 
 [!] Epoca 4
 
        Número de machos y hembras:
            - machos = 50
            - hembras = 50
-       Número de elefantes fallecidos por edad: 35
-       Número de «greedy mutations» que no sirven: 21
-       Número de «optimum mutations» que no han servido: 28
+       Número de elefantes fallecidos por edad: 1
+       Número de «greedy mutations» que no sirven: 17
+       Número de «optimum mutations» que no han servido: 1
 
 [!] Epoca 5
 
        Número de machos y hembras:
            - machos = 50
            - hembras = 50
-       Número de elefantes fallecidos por edad: 33
-       Número de «greedy mutations» que no sirven: 20
-       Número de «optimum mutations» que no han servido: 29
+       Número de elefantes fallecidos por edad: 0
+       Número de «greedy mutations» que no sirven: 17
+       Número de «optimum mutations» que no han servido: 0
 
 [!] Epoca 6
 
        Número de machos y hembras:
            - machos = 50
            - hembras = 50
-       Número de elefantes fallecidos por edad: 33
-       Número de «greedy mutations» que no sirven: 20
-       Número de «optimum mutations» que no han servido: 26
+       Número de elefantes fallecidos por edad: 3
+       Número de «greedy mutations» que no sirven: 21
+       Número de «optimum mutations» que no han servido: 3
 
 [!] Epoca 7
 
        Número de machos y hembras:
            - machos = 50
            - hembras = 50
-       Número de elefantes fallecidos por edad: 25
-       Número de «greedy mutations» que no sirven: 15
-       Número de «optimum mutations» que no han servido: 20
+       Número de elefantes fallecidos por edad: 6
+       Número de «greedy mutations» que no sirven: 21
+       Número de «optimum mutations» que no han servido: 6
 
 [!] Epoca 8
-
-       Número de machos y hembras:
-           - machos = 50
-           - hembras = 50
-       Número de elefantes fallecidos por edad: 32
-       Número de «greedy mutations» que no sirven: 17
-       Número de «optimum mutations» que no han servido: 19
-
-[!] Epoca 9
-
-       Número de machos y hembras:
-           - machos = 50
-           - hembras = 50
-       Número de elefantes fallecidos por edad: 21
-       Número de «greedy mutations» que no sirven: 11
-       Número de «optimum mutations» que no han servido: 17
-
-[!] Epoca 10
-
-       Número de machos y hembras:
-           - machos = 50
-           - hembras = 50
-       Número de elefantes fallecidos por edad: 22
-       Número de «greedy mutations» que no sirven: 22
-       Número de «optimum mutations» que no han servido: 15
-
-[!] Epoca 11
-
-       Número de machos y hembras:
-           - machos = 50
-           - hembras = 50
-       Número de elefantes fallecidos por edad: 18
-       Número de «greedy mutations» que no sirven: 17
-       Número de «optimum mutations» que no han servido: 12
-
-[!] Epoca 12
-
-       Número de machos y hembras:
-           - machos = 50
-           - hembras = 50
-       Número de elefantes fallecidos por edad: 6
-       Número de «greedy mutations» que no sirven: 17
-       Número de «optimum mutations» que no han servido: 3
-
-[!] Epoca 13
-
-       Número de machos y hembras:
-           - machos = 50
-           - hembras = 50
-       Número de elefantes fallecidos por edad: 8
-       Número de «greedy mutations» que no sirven: 25
-       Número de «optimum mutations» que no han servido: 7
-
-[!] Epoca 14
-
-       Número de machos y hembras:
-           - machos = 50
-           - hembras = 50
-       Número de elefantes fallecidos por edad: 5
-       Número de «greedy mutations» que no sirven: 13
-       Número de «optimum mutations» que no han servido: 3
-
-[!] Epoca 15
-
-       Número de machos y hembras:
-           - machos = 50
-           - hembras = 50
-       Número de elefantes fallecidos por edad: 11
-       Número de «greedy mutations» que no sirven: 21
-       Número de «optimum mutations» que no han servido: 10
-
-[!] Epoca 16
-
-       Número de machos y hembras:
-           - machos = 50
-           - hembras = 50
-       Número de elefantes fallecidos por edad: 14
-       Número de «greedy mutations» que no sirven: 18
-       Número de «optimum mutations» que no han servido: 9
-
-[!] Epoca 17
-
-       Número de machos y hembras:
-           - machos = 50
-           - hembras = 50
-       Número de elefantes fallecidos por edad: 9
-       Número de «greedy mutations» que no sirven: 10
-       Número de «optimum mutations» que no han servido: 5
-
-[!] Epoca 18
 
        Número de machos y hembras:
            - machos = 50
@@ -171,131 +81,221 @@ Proteina: B7KHU9
        Número de «greedy mutations» que no sirven: 19
        Número de «optimum mutations» que no han servido: 8
 
+[!] Epoca 9
+
+       Número de machos y hembras:
+           - machos = 50
+           - hembras = 50
+       Número de elefantes fallecidos por edad: 13
+       Número de «greedy mutations» que no sirven: 22
+       Número de «optimum mutations» que no han servido: 13
+
+[!] Epoca 10
+
+       Número de machos y hembras:
+           - machos = 50
+           - hembras = 50
+       Número de elefantes fallecidos por edad: 25
+       Número de «greedy mutations» que no sirven: 22
+       Número de «optimum mutations» que no han servido: 23
+
+[!] Epoca 11
+
+       Número de machos y hembras:
+           - machos = 50
+           - hembras = 50
+       Número de elefantes fallecidos por edad: 25
+       Número de «greedy mutations» que no sirven: 14
+       Número de «optimum mutations» que no han servido: 21
+
+[!] Epoca 12
+
+       Número de machos y hembras:
+           - machos = 50
+           - hembras = 50
+       Número de elefantes fallecidos por edad: 27
+       Número de «greedy mutations» que no sirven: 19
+       Número de «optimum mutations» que no han servido: 24
+
+[!] Epoca 13
+
+       Número de machos y hembras:
+           - machos = 50
+           - hembras = 50
+       Número de elefantes fallecidos por edad: 28
+       Número de «greedy mutations» que no sirven: 25
+       Número de «optimum mutations» que no han servido: 22
+
+[!] Epoca 14
+
+       Número de machos y hembras:
+           - machos = 50
+           - hembras = 50
+       Número de elefantes fallecidos por edad: 36
+       Número de «greedy mutations» que no sirven: 17
+       Número de «optimum mutations» que no han servido: 34
+
+[!] Epoca 15
+
+       Número de machos y hembras:
+           - machos = 50
+           - hembras = 50
+       Número de elefantes fallecidos por edad: 30
+       Número de «greedy mutations» que no sirven: 24
+       Número de «optimum mutations» que no han servido: 24
+
+[!] Epoca 16
+
+       Número de machos y hembras:
+           - machos = 50
+           - hembras = 50
+       Número de elefantes fallecidos por edad: 26
+       Número de «greedy mutations» que no sirven: 24
+       Número de «optimum mutations» que no han servido: 26
+
+[!] Epoca 17
+
+       Número de machos y hembras:
+           - machos = 50
+           - hembras = 50
+       Número de elefantes fallecidos por edad: 24
+       Número de «greedy mutations» que no sirven: 24
+       Número de «optimum mutations» que no han servido: 22
+
+[!] Epoca 18
+
+       Número de machos y hembras:
+           - machos = 50
+           - hembras = 50
+       Número de elefantes fallecidos por edad: 25
+       Número de «greedy mutations» que no sirven: 23
+       Número de «optimum mutations» que no han servido: 24
+
 [!] Epoca 19
 
        Número de machos y hembras:
            - machos = 50
            - hembras = 50
-       Número de elefantes fallecidos por edad: 4
-       Número de «greedy mutations» que no sirven: 15
-       Número de «optimum mutations» que no han servido: 2
+       Número de elefantes fallecidos por edad: 27
+       Número de «greedy mutations» que no sirven: 28
+       Número de «optimum mutations» que no han servido: 25
 
 [!] Epoca 20
 
        Número de machos y hembras:
            - machos = 50
            - hembras = 50
-       Número de elefantes fallecidos por edad: 9
-       Número de «greedy mutations» que no sirven: 11
-       Número de «optimum mutations» que no han servido: 7
+       Número de elefantes fallecidos por edad: 37
+       Número de «greedy mutations» que no sirven: 15
+       Número de «optimum mutations» que no han servido: 34
 
 [!] Epoca 21
 
        Número de machos y hembras:
            - machos = 50
            - hembras = 50
-       Número de elefantes fallecidos por edad: 7
-       Número de «greedy mutations» que no sirven: 14
-       Número de «optimum mutations» que no han servido: 5
+       Número de elefantes fallecidos por edad: 49
+       Número de «greedy mutations» que no sirven: 26
+       Número de «optimum mutations» que no han servido: 43
 
 [!] Epoca 22
 
        Número de machos y hembras:
            - machos = 50
            - hembras = 50
-       Número de elefantes fallecidos por edad: 3
-       Número de «greedy mutations» que no sirven: 18
-       Número de «optimum mutations» que no han servido: 3
+       Número de elefantes fallecidos por edad: 38
+       Número de «greedy mutations» que no sirven: 23
+       Número de «optimum mutations» que no han servido: 35
 
 [!] Epoca 23
 
        Número de machos y hembras:
            - machos = 50
            - hembras = 50
-       Número de elefantes fallecidos por edad: 4
-       Número de «greedy mutations» que no sirven: 18
-       Número de «optimum mutations» que no han servido: 3
+       Número de elefantes fallecidos por edad: 32
+       Número de «greedy mutations» que no sirven: 26
+       Número de «optimum mutations» que no han servido: 27
 
 [!] Epoca 24
 
        Número de machos y hembras:
            - machos = 50
            - hembras = 50
-       Número de elefantes fallecidos por edad: 1
-       Número de «greedy mutations» que no sirven: 12
-       Número de «optimum mutations» que no han servido: 0
+       Número de elefantes fallecidos por edad: 25
+       Número de «greedy mutations» que no sirven: 20
+       Número de «optimum mutations» que no han servido: 22
 
 [!] Epoca 25
 
        Número de machos y hembras:
            - machos = 50
            - hembras = 50
-       Número de elefantes fallecidos por edad: 0
-       Número de «greedy mutations» que no sirven: 13
-       Número de «optimum mutations» que no han servido: 0
+       Número de elefantes fallecidos por edad: 29
+       Número de «greedy mutations» que no sirven: 22
+       Número de «optimum mutations» que no han servido: 28
 
 [!] Epoca 26
 
        Número de machos y hembras:
            - machos = 50
            - hembras = 50
-       Número de elefantes fallecidos por edad: 5
-       Número de «greedy mutations» que no sirven: 20
-       Número de «optimum mutations» que no han servido: 4
+       Número de elefantes fallecidos por edad: 24
+       Número de «greedy mutations» que no sirven: 25
+       Número de «optimum mutations» que no han servido: 22
 
 [!] Epoca 27
 
        Número de machos y hembras:
            - machos = 50
            - hembras = 50
-       Número de elefantes fallecidos por edad: 5
-       Número de «greedy mutations» que no sirven: 28
-       Número de «optimum mutations» que no han servido: 5
+       Número de elefantes fallecidos por edad: 18
+       Número de «greedy mutations» que no sirven: 17
+       Número de «optimum mutations» que no han servido: 16
 
 [!] Epoca 28
 
        Número de machos y hembras:
            - machos = 50
            - hembras = 50
-       Número de elefantes fallecidos por edad: 8
-       Número de «greedy mutations» que no sirven: 17
-       Número de «optimum mutations» que no han servido: 7
+       Número de elefantes fallecidos por edad: 6
+       Número de «greedy mutations» que no sirven: 23
+       Número de «optimum mutations» que no han servido: 5
 
 [!] Epoca 29
 
        Número de machos y hembras:
            - machos = 50
            - hembras = 50
-       Número de elefantes fallecidos por edad: 6
-       Número de «greedy mutations» que no sirven: 19
-       Número de «optimum mutations» que no han servido: 3
+       Número de elefantes fallecidos por edad: 2
+       Número de «greedy mutations» que no sirven: 24
+       Número de «optimum mutations» que no han servido: 2
 
 [!] Epoca 30
 
        Número de machos y hembras:
            - machos = 50
            - hembras = 50
-       Número de elefantes fallecidos por edad: 4
-       Número de «greedy mutations» que no sirven: 21
-       Número de «optimum mutations» que no han servido: 4
+       Número de elefantes fallecidos por edad: 0
+       Número de «greedy mutations» que no sirven: 26
+       Número de «optimum mutations» que no han servido: 0
 
 [!] Epoca 31
 
        Número de machos y hembras:
            - machos = 50
            - hembras = 50
-       Número de elefantes fallecidos por edad: 5
-       Número de «greedy mutations» que no sirven: 22
-       Número de «optimum mutations» que no han servido: 4
+       Número de elefantes fallecidos por edad: 0
+       Número de «greedy mutations» que no sirven: 25
+       Número de «optimum mutations» que no han servido: 0
 
 [!] Epoca 32
 
        Número de machos y hembras:
            - machos = 50
            - hembras = 50
-       Número de elefantes fallecidos por edad: 5
-       Número de «greedy mutations» que no sirven: 19
-       Número de «optimum mutations» que no han servido: 5
+       Número de elefantes fallecidos por edad: 0
+       Número de «greedy mutations» que no sirven: 26
+       Número de «optimum mutations» que no han servido: 0
 
 [!] Epoca 33
 
@@ -303,7 +303,7 @@ Proteina: B7KHU9
            - machos = 50
            - hembras = 50
        Número de elefantes fallecidos por edad: 0
-       Número de «greedy mutations» que no sirven: 22
+       Número de «greedy mutations» que no sirven: 28
        Número de «optimum mutations» que no han servido: 0
 
 [!] Epoca 34
@@ -312,7 +312,7 @@ Proteina: B7KHU9
            - machos = 50
            - hembras = 50
        Número de elefantes fallecidos por edad: 0
-       Número de «greedy mutations» que no sirven: 13
+       Número de «greedy mutations» que no sirven: 32
        Número de «optimum mutations» que no han servido: 0
 
 [!] Epoca 35
@@ -330,7 +330,7 @@ Proteina: B7KHU9
            - machos = 50
            - hembras = 50
        Número de elefantes fallecidos por edad: 0
-       Número de «greedy mutations» que no sirven: 20
+       Número de «greedy mutations» que no sirven: 26
        Número de «optimum mutations» que no han servido: 0
 
 [!] Epoca 37
@@ -339,7 +339,7 @@ Proteina: B7KHU9
            - machos = 50
            - hembras = 50
        Número de elefantes fallecidos por edad: 0
-       Número de «greedy mutations» que no sirven: 21
+       Número de «greedy mutations» que no sirven: 33
        Número de «optimum mutations» que no han servido: 0
 
 [!] Epoca 38
@@ -348,7 +348,7 @@ Proteina: B7KHU9
            - machos = 50
            - hembras = 50
        Número de elefantes fallecidos por edad: 0
-       Número de «greedy mutations» que no sirven: 22
+       Número de «greedy mutations» que no sirven: 26
        Número de «optimum mutations» que no han servido: 0
 
 [!] Epoca 39
@@ -357,7 +357,7 @@ Proteina: B7KHU9
            - machos = 50
            - hembras = 50
        Número de elefantes fallecidos por edad: 0
-       Número de «greedy mutations» que no sirven: 24
+       Número de «greedy mutations» que no sirven: 28
        Número de «optimum mutations» que no han servido: 0
 
 [!] Epoca 40
@@ -366,7 +366,7 @@ Proteina: B7KHU9
            - machos = 50
            - hembras = 50
        Número de elefantes fallecidos por edad: 0
-       Número de «greedy mutations» que no sirven: 19
+       Número de «greedy mutations» que no sirven: 27
        Número de «optimum mutations» que no han servido: 0
 
 [!] Epoca 41
@@ -384,7 +384,7 @@ Proteina: B7KHU9
            - machos = 50
            - hembras = 50
        Número de elefantes fallecidos por edad: 0
-       Número de «greedy mutations» que no sirven: 20
+       Número de «greedy mutations» que no sirven: 29
        Número de «optimum mutations» que no han servido: 0
 
 [!] Epoca 43
@@ -393,7 +393,7 @@ Proteina: B7KHU9
            - machos = 50
            - hembras = 50
        Número de elefantes fallecidos por edad: 0
-       Número de «greedy mutations» que no sirven: 27
+       Número de «greedy mutations» que no sirven: 26
        Número de «optimum mutations» que no han servido: 0
 
 [!] Epoca 44
@@ -402,7 +402,7 @@ Proteina: B7KHU9
            - machos = 50
            - hembras = 50
        Número de elefantes fallecidos por edad: 0
-       Número de «greedy mutations» que no sirven: 15
+       Número de «greedy mutations» que no sirven: 25
        Número de «optimum mutations» que no han servido: 0
 
 [!] Epoca 45
@@ -411,7 +411,7 @@ Proteina: B7KHU9
            - machos = 50
            - hembras = 50
        Número de elefantes fallecidos por edad: 0
-       Número de «greedy mutations» que no sirven: 23
+       Número de «greedy mutations» que no sirven: 24
        Número de «optimum mutations» que no han servido: 0
 
 [!] Epoca 46
@@ -420,7 +420,7 @@ Proteina: B7KHU9
            - machos = 50
            - hembras = 50
        Número de elefantes fallecidos por edad: 0
-       Número de «greedy mutations» que no sirven: 26
+       Número de «greedy mutations» que no sirven: 38
        Número de «optimum mutations» que no han servido: 0
 
 [!] Epoca 47
@@ -429,7 +429,7 @@ Proteina: B7KHU9
            - machos = 50
            - hembras = 50
        Número de elefantes fallecidos por edad: 0
-       Número de «greedy mutations» que no sirven: 23
+       Número de «greedy mutations» que no sirven: 30
        Número de «optimum mutations» que no han servido: 0
 
 [!] Epoca 48
@@ -438,7 +438,7 @@ Proteina: B7KHU9
            - machos = 50
            - hembras = 50
        Número de elefantes fallecidos por edad: 0
-       Número de «greedy mutations» que no sirven: 20
+       Número de «greedy mutations» que no sirven: 24
        Número de «optimum mutations» que no han servido: 0
 
 [!] Epoca 49
@@ -447,7 +447,7 @@ Proteina: B7KHU9
            - machos = 50
            - hembras = 50
        Número de elefantes fallecidos por edad: 0
-       Número de «greedy mutations» que no sirven: 21
+       Número de «greedy mutations» que no sirven: 23
        Número de «optimum mutations» que no han servido: 0
 
 [!] Epoca 50
@@ -456,7 +456,7 @@ Proteina: B7KHU9
            - machos = 50
            - hembras = 50
        Número de elefantes fallecidos por edad: 0
-       Número de «greedy mutations» que no sirven: 24
+       Número de «greedy mutations» que no sirven: 28
        Número de «optimum mutations» que no han servido: 0
 
 [!] Epoca 51
@@ -465,7 +465,7 @@ Proteina: B7KHU9
            - machos = 50
            - hembras = 50
        Número de elefantes fallecidos por edad: 0
-       Número de «greedy mutations» que no sirven: 23
+       Número de «greedy mutations» que no sirven: 22
        Número de «optimum mutations» que no han servido: 0
 
 [!] Epoca 52
@@ -474,7 +474,7 @@ Proteina: B7KHU9
            - machos = 50
            - hembras = 50
        Número de elefantes fallecidos por edad: 0
-       Número de «greedy mutations» que no sirven: 19
+       Número de «greedy mutations» que no sirven: 25
        Número de «optimum mutations» que no han servido: 0
 
 [!] Epoca 53
@@ -483,7 +483,7 @@ Proteina: B7KHU9
            - machos = 50
            - hembras = 50
        Número de elefantes fallecidos por edad: 0
-       Número de «greedy mutations» que no sirven: 21
+       Número de «greedy mutations» que no sirven: 24
        Número de «optimum mutations» que no han servido: 0
 
 [!] Epoca 54
@@ -492,7 +492,7 @@ Proteina: B7KHU9
            - machos = 50
            - hembras = 50
        Número de elefantes fallecidos por edad: 0
-       Número de «greedy mutations» que no sirven: 19
+       Número de «greedy mutations» que no sirven: 23
        Número de «optimum mutations» que no han servido: 0
 
 [!] Epoca 55
@@ -501,7 +501,7 @@ Proteina: B7KHU9
            - machos = 50
            - hembras = 50
        Número de elefantes fallecidos por edad: 0
-       Número de «greedy mutations» que no sirven: 19
+       Número de «greedy mutations» que no sirven: 25
        Número de «optimum mutations» que no han servido: 0
 
 [!] Epoca 56
@@ -510,7 +510,7 @@ Proteina: B7KHU9
            - machos = 50
            - hembras = 50
        Número de elefantes fallecidos por edad: 0
-       Número de «greedy mutations» que no sirven: 22
+       Número de «greedy mutations» que no sirven: 21
        Número de «optimum mutations» que no han servido: 0
 
 [!] Epoca 57
@@ -519,7 +519,7 @@ Proteina: B7KHU9
            - machos = 50
            - hembras = 50
        Número de elefantes fallecidos por edad: 0
-       Número de «greedy mutations» que no sirven: 30
+       Número de «greedy mutations» que no sirven: 20
        Número de «optimum mutations» que no han servido: 0
 
 [!] Epoca 58
@@ -528,7 +528,7 @@ Proteina: B7KHU9
            - machos = 50
            - hembras = 50
        Número de elefantes fallecidos por edad: 0
-       Número de «greedy mutations» que no sirven: 19
+       Número de «greedy mutations» que no sirven: 26
        Número de «optimum mutations» que no han servido: 0
 
 [!] Epoca 59
@@ -546,7 +546,7 @@ Proteina: B7KHU9
            - machos = 50
            - hembras = 50
        Número de elefantes fallecidos por edad: 0
-       Número de «greedy mutations» que no sirven: 23
+       Número de «greedy mutations» que no sirven: 29
        Número de «optimum mutations» que no han servido: 0
 
 [!] Epoca 61
@@ -555,7 +555,7 @@ Proteina: B7KHU9
            - machos = 50
            - hembras = 50
        Número de elefantes fallecidos por edad: 0
-       Número de «greedy mutations» que no sirven: 23
+       Número de «greedy mutations» que no sirven: 26
        Número de «optimum mutations» que no han servido: 0
 
 [!] Epoca 62
@@ -564,7 +564,7 @@ Proteina: B7KHU9
            - machos = 50
            - hembras = 50
        Número de elefantes fallecidos por edad: 0
-       Número de «greedy mutations» que no sirven: 21
+       Número de «greedy mutations» que no sirven: 18
        Número de «optimum mutations» que no han servido: 0
 
 [!] Epoca 63
@@ -573,7 +573,7 @@ Proteina: B7KHU9
            - machos = 50
            - hembras = 50
        Número de elefantes fallecidos por edad: 0
-       Número de «greedy mutations» que no sirven: 18
+       Número de «greedy mutations» que no sirven: 20
        Número de «optimum mutations» que no han servido: 0
 
 [!] Epoca 64
@@ -582,7 +582,7 @@ Proteina: B7KHU9
            - machos = 50
            - hembras = 50
        Número de elefantes fallecidos por edad: 0
-       Número de «greedy mutations» que no sirven: 19
+       Número de «greedy mutations» que no sirven: 21
        Número de «optimum mutations» que no han servido: 0
 
 [!] Epoca 65
@@ -591,7 +591,7 @@ Proteina: B7KHU9
            - machos = 50
            - hembras = 50
        Número de elefantes fallecidos por edad: 0
-       Número de «greedy mutations» que no sirven: 19
+       Número de «greedy mutations» que no sirven: 22
        Número de «optimum mutations» que no han servido: 0
 
 [!] Epoca 66
@@ -600,7 +600,7 @@ Proteina: B7KHU9
            - machos = 50
            - hembras = 50
        Número de elefantes fallecidos por edad: 0
-       Número de «greedy mutations» que no sirven: 22
+       Número de «greedy mutations» que no sirven: 19
        Número de «optimum mutations» que no han servido: 0
 
 [!] Epoca 67
@@ -609,7 +609,7 @@ Proteina: B7KHU9
            - machos = 50
            - hembras = 50
        Número de elefantes fallecidos por edad: 0
-       Número de «greedy mutations» que no sirven: 21
+       Número de «greedy mutations» que no sirven: 15
        Número de «optimum mutations» que no han servido: 0
 
 [!] Epoca 68
@@ -618,7 +618,7 @@ Proteina: B7KHU9
            - machos = 50
            - hembras = 50
        Número de elefantes fallecidos por edad: 0
-       Número de «greedy mutations» que no sirven: 21
+       Número de «greedy mutations» que no sirven: 18
        Número de «optimum mutations» que no han servido: 0
 
 [!] Epoca 69
@@ -627,7 +627,7 @@ Proteina: B7KHU9
            - machos = 50
            - hembras = 50
        Número de elefantes fallecidos por edad: 0
-       Número de «greedy mutations» que no sirven: 13
+       Número de «greedy mutations» que no sirven: 28
        Número de «optimum mutations» que no han servido: 0
 
 [!] Epoca 70
@@ -636,7 +636,7 @@ Proteina: B7KHU9
            - machos = 50
            - hembras = 50
        Número de elefantes fallecidos por edad: 0
-       Número de «greedy mutations» que no sirven: 19
+       Número de «greedy mutations» que no sirven: 26
        Número de «optimum mutations» que no han servido: 0
 
 [!] Epoca 71
@@ -645,7 +645,7 @@ Proteina: B7KHU9
            - machos = 50
            - hembras = 50
        Número de elefantes fallecidos por edad: 0
-       Número de «greedy mutations» que no sirven: 13
+       Número de «greedy mutations» que no sirven: 26
        Número de «optimum mutations» que no han servido: 0
 
 [!] Epoca 72
@@ -663,7 +663,7 @@ Proteina: B7KHU9
            - machos = 50
            - hembras = 50
        Número de elefantes fallecidos por edad: 0
-       Número de «greedy mutations» que no sirven: 19
+       Número de «greedy mutations» que no sirven: 20
        Número de «optimum mutations» que no han servido: 0
 
 [!] Epoca 74
@@ -672,7 +672,7 @@ Proteina: B7KHU9
            - machos = 50
            - hembras = 50
        Número de elefantes fallecidos por edad: 0
-       Número de «greedy mutations» que no sirven: 14
+       Número de «greedy mutations» que no sirven: 20
        Número de «optimum mutations» que no han servido: 0
 
 [!] Epoca 75
@@ -690,7 +690,7 @@ Proteina: B7KHU9
            - machos = 50
            - hembras = 50
        Número de elefantes fallecidos por edad: 0
-       Número de «greedy mutations» que no sirven: 15
+       Número de «greedy mutations» que no sirven: 18
        Número de «optimum mutations» que no han servido: 0
 
 [!] Epoca 77
@@ -699,7 +699,7 @@ Proteina: B7KHU9
            - machos = 50
            - hembras = 50
        Número de elefantes fallecidos por edad: 0
-       Número de «greedy mutations» que no sirven: 14
+       Número de «greedy mutations» que no sirven: 16
        Número de «optimum mutations» que no han servido: 0
 
 [!] Epoca 78
@@ -708,7 +708,7 @@ Proteina: B7KHU9
            - machos = 50
            - hembras = 50
        Número de elefantes fallecidos por edad: 0
-       Número de «greedy mutations» que no sirven: 19
+       Número de «greedy mutations» que no sirven: 22
        Número de «optimum mutations» que no han servido: 0
 
 [!] Epoca 79
@@ -717,7 +717,7 @@ Proteina: B7KHU9
            - machos = 50
            - hembras = 50
        Número de elefantes fallecidos por edad: 0
-       Número de «greedy mutations» que no sirven: 19
+       Número de «greedy mutations» que no sirven: 18
        Número de «optimum mutations» que no han servido: 0
 
 [!] Epoca 80
@@ -726,7 +726,7 @@ Proteina: B7KHU9
            - machos = 50
            - hembras = 50
        Número de elefantes fallecidos por edad: 0
-       Número de «greedy mutations» que no sirven: 17
+       Número de «greedy mutations» que no sirven: 15
        Número de «optimum mutations» que no han servido: 0
 
 [!] Epoca 81
@@ -735,7 +735,7 @@ Proteina: B7KHU9
            - machos = 50
            - hembras = 50
        Número de elefantes fallecidos por edad: 0
-       Número de «greedy mutations» que no sirven: 23
+       Número de «greedy mutations» que no sirven: 20
        Número de «optimum mutations» que no han servido: 0
 
 [!] Epoca 82
@@ -744,7 +744,7 @@ Proteina: B7KHU9
            - machos = 50
            - hembras = 50
        Número de elefantes fallecidos por edad: 0
-       Número de «greedy mutations» que no sirven: 15
+       Número de «greedy mutations» que no sirven: 18
        Número de «optimum mutations» que no han servido: 0
 
 [!] Epoca 83
@@ -753,7 +753,7 @@ Proteina: B7KHU9
            - machos = 50
            - hembras = 50
        Número de elefantes fallecidos por edad: 0
-       Número de «greedy mutations» que no sirven: 19
+       Número de «greedy mutations» que no sirven: 17
        Número de «optimum mutations» que no han servido: 0
 
 [!] Epoca 84
@@ -762,7 +762,7 @@ Proteina: B7KHU9
            - machos = 50
            - hembras = 50
        Número de elefantes fallecidos por edad: 0
-       Número de «greedy mutations» que no sirven: 14
+       Número de «greedy mutations» que no sirven: 17
        Número de «optimum mutations» que no han servido: 0
 
 [!] Epoca 85
@@ -771,7 +771,7 @@ Proteina: B7KHU9
            - machos = 50
            - hembras = 50
        Número de elefantes fallecidos por edad: 0
-       Número de «greedy mutations» que no sirven: 19
+       Número de «greedy mutations» que no sirven: 24
        Número de «optimum mutations» que no han servido: 0
 
 [!] Epoca 86
@@ -780,7 +780,7 @@ Proteina: B7KHU9
            - machos = 50
            - hembras = 50
        Número de elefantes fallecidos por edad: 0
-       Número de «greedy mutations» que no sirven: 18
+       Número de «greedy mutations» que no sirven: 23
        Número de «optimum mutations» que no han servido: 0
 
 [!] Epoca 87
@@ -789,7 +789,7 @@ Proteina: B7KHU9
            - machos = 50
            - hembras = 50
        Número de elefantes fallecidos por edad: 0
-       Número de «greedy mutations» que no sirven: 16
+       Número de «greedy mutations» que no sirven: 21
        Número de «optimum mutations» que no han servido: 0
 
 [!] Epoca 88
@@ -798,7 +798,7 @@ Proteina: B7KHU9
            - machos = 50
            - hembras = 50
        Número de elefantes fallecidos por edad: 0
-       Número de «greedy mutations» que no sirven: 17
+       Número de «greedy mutations» que no sirven: 18
        Número de «optimum mutations» que no han servido: 0
 
 [!] Epoca 89
@@ -807,7 +807,7 @@ Proteina: B7KHU9
            - machos = 50
            - hembras = 50
        Número de elefantes fallecidos por edad: 0
-       Número de «greedy mutations» que no sirven: 17
+       Número de «greedy mutations» que no sirven: 18
        Número de «optimum mutations» que no han servido: 0
 
 [!] Epoca 90
@@ -816,7 +816,7 @@ Proteina: B7KHU9
            - machos = 50
            - hembras = 50
        Número de elefantes fallecidos por edad: 0
-       Número de «greedy mutations» que no sirven: 22
+       Número de «greedy mutations» que no sirven: 20
        Número de «optimum mutations» que no han servido: 0
 
 [!] Epoca 91
@@ -825,7 +825,7 @@ Proteina: B7KHU9
            - machos = 50
            - hembras = 50
        Número de elefantes fallecidos por edad: 0
-       Número de «greedy mutations» que no sirven: 17
+       Número de «greedy mutations» que no sirven: 27
        Número de «optimum mutations» que no han servido: 0
 
 [!] Epoca 92
@@ -834,7 +834,7 @@ Proteina: B7KHU9
            - machos = 50
            - hembras = 50
        Número de elefantes fallecidos por edad: 0
-       Número de «greedy mutations» que no sirven: 14
+       Número de «greedy mutations» que no sirven: 20
        Número de «optimum mutations» que no han servido: 0
 
 [!] Epoca 93
@@ -843,7 +843,7 @@ Proteina: B7KHU9
            - machos = 50
            - hembras = 50
        Número de elefantes fallecidos por edad: 0
-       Número de «greedy mutations» que no sirven: 15
+       Número de «greedy mutations» que no sirven: 16
        Número de «optimum mutations» que no han servido: 0
 
 [!] Epoca 94
@@ -852,7 +852,7 @@ Proteina: B7KHU9
            - machos = 50
            - hembras = 50
        Número de elefantes fallecidos por edad: 0
-       Número de «greedy mutations» que no sirven: 22
+       Número de «greedy mutations» que no sirven: 21
        Número de «optimum mutations» que no han servido: 0
 
 [!] Epoca 95
@@ -861,7 +861,7 @@ Proteina: B7KHU9
            - machos = 50
            - hembras = 50
        Número de elefantes fallecidos por edad: 0
-       Número de «greedy mutations» que no sirven: 15
+       Número de «greedy mutations» que no sirven: 19
        Número de «optimum mutations» que no han servido: 0
 
 [!] Epoca 96
@@ -879,7 +879,7 @@ Proteina: B7KHU9
            - machos = 50
            - hembras = 50
        Número de elefantes fallecidos por edad: 0
-       Número de «greedy mutations» que no sirven: 13
+       Número de «greedy mutations» que no sirven: 28
        Número de «optimum mutations» que no han servido: 0
 
 [!] Epoca 98
@@ -888,7 +888,7 @@ Proteina: B7KHU9
            - machos = 50
            - hembras = 50
        Número de elefantes fallecidos por edad: 0
-       Número de «greedy mutations» que no sirven: 14
+       Número de «greedy mutations» que no sirven: 19
        Número de «optimum mutations» que no han servido: 0
 
 [!] Epoca 99
@@ -897,7 +897,7 @@ Proteina: B7KHU9
            - machos = 50
            - hembras = 50
        Número de elefantes fallecidos por edad: 0
-       Número de «greedy mutations» que no sirven: 19
+       Número de «greedy mutations» que no sirven: 18
        Número de «optimum mutations» que no han servido: 0
 
 
@@ -905,8 +905,8 @@ Proteina: B7KHU9
  [?] PORCENTAJES DEL LANZAMIENTO: 
  [*] PORCENTAJE DE MACHOS: 50
  [*] PORCENTAJE DE HEMBRAS: 50
- [*] PORCENTAJE DE ELEFANTES FALLECIDOS: 4.26
- [*] PORCENTAJE DE 'GREEDY MUTATIONS' SIN UTILIDAD: 37.22
- [*] PORCENTAJE DE 'OPTIMUM MUTATIONS' SIN UTILIDAD: 76.7606
+ [*] PORCENTAJE DE ELEFANTES FALLECIDOS: 5.65
+ [*] PORCENTAJE DE 'GREEDY MUTATIONS' SIN UTILIDAD: 44.76
+ [*] PORCENTAJE DE 'OPTIMUM MUTATIONS' SIN UTILIDAD: 90.2655
  [*] HIPERVOLUMEN OBTENIDO: 
-B7KHU9: 24.2713
+B7KHU9: 32.8267
