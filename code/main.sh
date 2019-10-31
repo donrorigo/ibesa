@@ -5,6 +5,7 @@ for i in {1..5}
 do
   mkdir IBEA\ Results/Rep$i
   while read field1 field2 field3; do
+    rm $field1"_population.txt"
     ./ibesa 100 100 10 $field1 $field2 $field3
     ./IBESA\ convert\ to\ HYPERVOLUME $field1.txt
     ./normalize RESULTADOS\:\ $field1 $field1 0.40

@@ -18,6 +18,7 @@ typedef struct single_st{
     int age;
     string id;
     int lastmutation;
+    int number; /* nº que lleva el elefante de la primera generación */
     bool operator==(const single_st& a) { return (id==a.id) ? true : false; }
     single_st& operator =(const single_st& a)
     {
@@ -29,6 +30,8 @@ typedef struct single_st{
         fitness = a.fitness;
         age = a.age;
         id = a.id;
+        lastmutation = a.lastmutation;
+        number = a.number;
         return *this;
     }
 } single; /* estructura de cada individuo */

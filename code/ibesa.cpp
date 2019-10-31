@@ -98,10 +98,10 @@ map<string, double> amino_weights = {
     {"UAC", 1}, {"UAU", 0.810795614}};
 
 
-void sorting_population(vector<single> &vector_pop)
+void sorting_population()
 /* ordena mediante fitness el vector pasado por referencia */
 {
-    std::sort(vector_pop.begin(), vector_pop.end(), [&](const single &x, const single &y) -> bool {
+    std::sort(population.begin(), population.end(), [&](const single &x, const single &y) -> bool {
         return x.fitness > y.fitness;
     });
 
@@ -139,7 +139,8 @@ void create_superCAI(int numC, string sequence)
     result.fitness = 0;
     result.age = 0;
     result.gender = true; 
-    result.lastmutation = 0;
+    result.lastmutation = -1;
+    result.number = 0;
     population.push_back(result);
 
     return;
@@ -157,7 +158,7 @@ void init(int total, string amino_sequence, int CDSs, int machos)
     string id;
      
            
-    for(int i=1; i < total; ++i) // numero de individuos de la población 
+    for(int i=1; i < 2*total; ++i) // numero de individuos de la población 
     {          
         single individuo;
         id = "";
@@ -181,12 +182,13 @@ void init(int total, string amino_sequence, int CDSs, int machos)
         individuo.id = id;
         individuo.fitness = 0;
         individuo.age = 0;
-        individuo.lastmutation = 0;
+        individuo.lastmutation = -1;
         individuo.gender = (i < machos) ? true : false; 
+        individuo.number = i;
         population.push_back(individuo);
     }
 
-    for (int i = 0; i < total; ++i) population.push_back(population[1]);
+    // for (int i = 0; i < total; ++i) population.push_back(population[1]);
        
     return;
 }
@@ -237,9 +239,11 @@ void show_population(int x)
     fs << "\nIteracción: " << x << endl;
     for(int n = 0; n < population.size(); ++n)
     {   
+        if(n==population.size()/2) fs << endl;
         j=0;
         fs << "individual" << n << " mCAI=" << population[n].objetives[0] << ",mHD=" << population[n].objetives[1] << ",lLCS=" << population[n].objetives[2];
-        fs << ",GENDER=" << ((population[n].gender) ? "male" : "female") << ",AGE:" << population[n].age <<",fitness:" << population[n].fitness << ", last mutation: " << population[n].lastmutation << endl; 
+        fs << ",GENDER=" << ((population[n].gender) ? "male" : "female") << ",AGE:" << population[n].age <<",fitness:" << population[n].fitness << ", last mutation: " << population[n].lastmutation; 
+        fs << ", Identificador de poblacion: " << population[n].number << endl;
         i++;
     }
 
@@ -248,7 +252,7 @@ void show_population(int x)
     return;
 }
 
-void export2file_mh()
+void export2utility()
 /* exportación de los datos de debug al fichero utility.txt */
 {
     ofstream fs(code + "_utility.txt");
@@ -338,7 +342,9 @@ int main(int argc, char const *argv[])
     /* calculo del fitness y ordenacion de la primera poblacion */
     #pragma omp parallel
     compute_fitness(population, indicators, bounds);
-    sorting_population(population);   /* selección por elitismo (mayor fitness) */
+
+    cout << "Ordenacion poblacion 0" << endl;
+    sorting_population();   /* selección por elitismo (mayor fitness) */
 
  
     /* inicio del algoritmo */
@@ -349,6 +355,7 @@ int main(int argc, char const *argv[])
         {
             #pragma omp single
             {
+                show_population(i);
                 cout << "[!] Generación: " << i  << endl;
                 machos = old = nonutil = optimum_util = 0;
             }
@@ -356,9 +363,8 @@ int main(int argc, char const *argv[])
             /* equilibrado de generos */
             #pragma omp for schedule(guided)
             for(int j=0; j<poblacion; ++j)  
-            { 
-                population[j].gender = (j<poblacion/2) ? false : true;
-            } 
+            population[j].gender = (j<poblacion/2) ? false : true;
+            
 
             /* mutaciones */
             #pragma omp for schedule(guided) reduction(+: nonutil)   
@@ -368,11 +374,11 @@ int main(int argc, char const *argv[])
                     greedy_mutations[rand_r(&random_vector[id_th])%3](population[j], population[j+poblacion], GREEDYMUTATION, id_th, random_vector, auxiliar_cdss);
                     
                     /* control de convergencia a una única solución */
-                    if (population[j] == population[j+poblacion]) 
-                    {
-                        random_mutation(population[j], population[j+poblacion], RANDOMMUTATION, id_th, random_vector, auxiliar_cdss); 
-                        nonutil++;
-                    }
+                    // if (population[j] == population[j+poblacion]) 
+                    // {
+                    //     random_mutation(population[j], population[j+poblacion], RANDOMMUTATION, id_th, random_vector, auxiliar_cdss); 
+                    //     nonutil++;
+                    // }
                 }else{
                     random_mutation(population[j], population[j+poblacion], RANDOMMUTATION, id_th, random_vector, auxiliar_cdss);
                     machos++;
@@ -414,8 +420,7 @@ int main(int argc, char const *argv[])
             {
                 try
                 {
-                    sorting_population(population);   /* selección por elitismo (mayor fitness) */
-                    show_population(i);
+                    sorting_population();   /* selección por elitismo (mayor fitness) */
                 }
                 catch(const std::exception& e)
                 {
@@ -483,7 +488,7 @@ int main(int argc, char const *argv[])
 
     /* escritura en fichero */
     write_results();
-    export2file_mh();
+    export2utility();
 
     cout << "[*] Proteína " << code << " terminada.\n" << endl; 
 
