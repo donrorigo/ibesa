@@ -25,14 +25,14 @@
 #define RHO 1.1 /* variable auxiliar de hipervolumen */
 #define OLD 5 /* numero de mutaciones donde se considera la solucion estancada */
 #define RANDOMMUTATION 2
-#define GREEDYMUTATION 50
+#define GREEDYMUTATION 45
 
 
 using namespace std;
 
 string code;
 vector<single> population; /* vector para la poblacion */
-vector<single> optimum_mutated; /* vector auxiliar para las mutaciones optimas */
+vector< vector <single>> optimum_mutated; /* vector auxiliar para las mutaciones optimas */
 vector<single> solutions; /* vector grande de soluciones */
 vector<single> paretofront; /* vector final con el frente de pareto */
 vector<range> bounds; /* array de límites: [0] = HD, [1] = CAI, [2] = LRCS */
@@ -54,6 +54,7 @@ static void write_results();
 static void show_population(int x);
 static void create_superCAI(int numC, string sequence);
 static void export2utility();
+static int three_mutations(int i, int th);
 
 /* atributos de debuggeo */
 map <int, std::pair<int, int> > howmany; /* primera posición machos */

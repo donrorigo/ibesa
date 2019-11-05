@@ -246,12 +246,12 @@ void lrcs_mutation(single & a, single &result, double Pm, int th, vector<unsigne
 
 void undue_cai_mutation(single &a, single &result, double Pm, int th, vector<unsigned int> &random_vector, vector<vector<string> > &auxiliar_cdss)
 {
-    string codon, random_codon, new_cds = "", id = "";
+    string codon, random_codon, new_cds = "", id = "", new_CDS1;
     string CDS;
     int size, c=0;
+    result.cds = a.cds;
+    aim new_mHD, new_lrcs;
 
-
-    //printf("[*] Hilo %d: Mutación óptima CAI.\n", th);
     try
     {
         
@@ -269,10 +269,20 @@ void undue_cai_mutation(single &a, single &result, double Pm, int th, vector<uns
                         random_codon = amino_codons[which_amino[codon]][rand_r(&random_vector[th])%size];
                         if(amino_weights[random_codon] == 1)  new_cds += random_codon;                
                     }while(amino_weights[random_codon] != 1);
-                }else new_cds += codon;
+
+                    new_CDS1 = change_CDS(CDS, random_codon, i);
+                    update_CDSs(result.cds, new_CDS1, CDS, auxiliar_cdss[th]);
+                    new_mHD = mHD(auxiliar_cdss[th]);
+                    new_lrcs = mlrcs(auxiliar_cdss[th]);
+                    if(new_mHD.value >= a.objetives[1] && new_lrcs.value <= a.objetives[2])
+                    {
+                        update_vector(auxiliar_cdss[th], result.cds);
+                        a.objetives[1] = new_mHD.value;
+                        a.objetives[2] =  new_lrcs.value;
+                    } 
+                }
             }
-            result.cds[c] = (new_cds);
-            new_cds = "";
+            
         }
 
         

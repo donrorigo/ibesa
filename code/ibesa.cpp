@@ -101,10 +101,7 @@ map<string, double> amino_weights = {
 void sorting_population()
 /* ordena mediante fitness el vector pasado por referencia */
 {
-    std::sort(population.begin(), population.end(), [&](const single &x, const single &y) -> bool {
-        return x.fitness > y.fitness;
-    });
-
+    std::sort(population.begin(), population.end(), [&](const single &x, const single &y) -> bool { return x.fitness > y.fitness; });
     return;
 }
 
@@ -292,6 +289,23 @@ void export2utility()
     return;
 }
 
+int three_mutations(int j, int id_th)
+{
+    double dcai, dmhd, dlrcs, dif;
+    int iter;
+    optimum_mutations[0](population[j], optimum_mutated[id_th][0], rand_r(&random_vector[id_th])% 5 + (GREEDYMUTATION-40), id_th, random_vector, auxiliar_cdss);
+    optimum_mutations[1](population[j], optimum_mutated[id_th][1], rand_r(&random_vector[id_th])% 5 + (GREEDYMUTATION-40), id_th, random_vector, auxiliar_cdss);
+    optimum_mutations[2](population[j], optimum_mutated[id_th][2], rand_r(&random_vector[id_th])% 5 + (GREEDYMUTATION-40), id_th, random_vector, auxiliar_cdss);
+    dcai = std::abs(optimum_mutated[id_th][0].objetives[0] - population[j].objetives[0]);
+    dmhd = std::abs(optimum_mutated[id_th][1].objetives[1] - population[j].objetives[1]);
+    dlrcs = std::abs(optimum_mutated[id_th][2].objetives[2] - population[j].objetives[2]);
+    dif = std::max({dcai, dmhd, dlrcs}, [](const std::double_t& s1, const std::double_t& s2) { return s1 < s2;});
+    
+    if(dif==dcai) return 0;
+    else if(dif==dmhd) return 1;
+    else return 2;
+}
+
 int main(int argc, char const *argv[])
 /*  Argumentos: 
         1. número total de individuos de la población
@@ -302,35 +316,30 @@ int main(int argc, char const *argv[])
         6. numero de CDSs a generar
 */
 {
-    /* definición de variables e inicialización */
+    cout << "[*] Proteína " << code << " iniciada." << endl;
+
+    /* definición de la variable de generaciones*/
     int i=0;
+
+    /* guarda de los parámetros */
     int poblacion = atoi(argv[1]), epochs = atoi(argv[2]), total_cds = stoi(argv[6]);
     string aminoacids = argv[5];
-    greedy_mutations = {lrcs_mutation, mhd_mutation, cai_mutation};
-    optimum_mutations = {undue_cai_mutation, undue_mhd_mutation, undue_lrcs_mutation};
-    unsigned int seed = time(NULL); 
-    int id_th, hilos = omp_get_max_threads();
-    volatile int machos, old, nonutil, optimum_util;
     code = argv[4];
 
-    cout << "[*] Proteína " << code << " iniciada." << endl; 
+    /* definición de variables para el paralelismo */
+    int id_th, hilos = omp_get_max_threads();
 
-    /* reserva de memoria */
-    
+    /* inicialización del vector de llamadas a mutaciones */
+    greedy_mutations = {lrcs_mutation, mhd_mutation, cai_mutation};
+    optimum_mutations = {undue_cai_mutation, undue_mhd_mutation, undue_lrcs_mutation};
+
+    /* reserva de memoria para el calculo del fitness */
     indicators.reserve(poblacion*2);
     bounds.reserve(3);
     for(int i=0; i<poblacion*2; ++i) indicators[i].reserve(poblacion*2);       
-    for(int th=0; th<hilos; ++th) random_vector.push_back(seed+th);
-
-    /* inicialización de la población */
-    create_superCAI(total_cds, aminoacids);
-    init(poblacion, aminoacids, total_cds, machos);
-    for(int th=0; th<hilos; ++th) optimum_mutated.push_back(population[0]);
     
-    /* inicialización del vector auxiliar */
-    for(int th = 0; th < hilos; ++th) auxiliar_cdss.push_back(population[0].cds);
-
     /* inicialización de las estructuras de estadistica */
+    volatile int machos, old, nonutil, optimum_util;
     for(int n=0; n<poblacion; ++n)
     {
         howmany.insert(std::make_pair(n, std::pair<int,int>(0,0)));
@@ -339,13 +348,24 @@ int main(int argc, char const *argv[])
         optimum_utility.insert(std::make_pair(n,0));
     }
 
+    /* inicialización del vector de randoms */
+    unsigned int seed = time(NULL); 
+    for(int th=0; th<hilos; ++th) random_vector.push_back(seed+th);
+
+    /* inicialización de la población */
+    create_superCAI(total_cds, aminoacids);
+    init(poblacion, aminoacids, total_cds, machos);
+    for(int th=0; th<hilos; ++th) optimum_mutated.push_back({population[0],population[0],population[0]});        
+    
+    /* inicialización del vector auxiliar */
+    for(int th = 0; th < hilos; ++th) auxiliar_cdss.push_back(population[0].cds);
+
     /* calculo del fitness y ordenacion de la primera poblacion */
     #pragma omp parallel
     compute_fitness(population, indicators, bounds);
 
-    cout << "Ordenacion poblacion 0" << endl;
-    sorting_population();   /* selección por elitismo (mayor fitness) */
-
+    /* selección por elitismo (mayor fitness) */
+    sorting_population();   
  
     /* inicio del algoritmo */
     #pragma omp parallel private(id_th) shared(machos, old, nonutil, optimum_util)
@@ -364,7 +384,6 @@ int main(int argc, char const *argv[])
             #pragma omp for schedule(guided)
             for(int j=0; j<poblacion; ++j)  
             population[j].gender = (j<poblacion/2) ? false : true;
-            
 
             /* mutaciones */
             #pragma omp for schedule(guided) reduction(+: nonutil)   
@@ -376,7 +395,7 @@ int main(int argc, char const *argv[])
                     /* control de convergencia a una única solución */
                     if (population[j] == population[j+poblacion]) 
                     {
-                        random_mutation(population[j], population[j+poblacion], RANDOMMUTATION, id_th, random_vector, auxiliar_cdss); 
+                        random_mutation(population[j], population[j+poblacion], 5*RANDOMMUTATION, id_th, random_vector, auxiliar_cdss); 
                         nonutil++;
                     }
                 }else{
@@ -392,29 +411,23 @@ int main(int argc, char const *argv[])
             #pragma omp for schedule(guided) reduction(+: old, optimum_util)
             for(int j=0; j<2*poblacion; ++j)  /* mutaciones óptimas */
             { 
-                if(population[j].age == OLD) 
+                if(population[j].age >= OLD) 
                 {
-                    old++;
-                    optimum_mutations[ rand_r(&random_vector[id_th])%3](population[j], optimum_mutated[id_th], rand_r(&random_vector[id_th])% 5 + (GREEDYMUTATION-40), id_th, random_vector, auxiliar_cdss);
-                    if(dominates(optimum_mutated[id_th], population[j]) == 1) population[j]=optimum_mutated[id_th]; 
+                    old++;  
+                    if(dominates(optimum_mutated[id_th][three_mutations(j, id_th)], population[j]) == 1) population[j]=optimum_mutated[id_th][0]; 
                     else
                     {
-                        random_mutation(population[j], population[j], 2+RANDOMMUTATION, id_th, random_vector, auxiliar_cdss); 
+                        random_mutation(population[j], population[j], 10*RANDOMMUTATION, id_th, random_vector, auxiliar_cdss); 
                         optimum_util++;
                     }
+
+                    /* reset de la edad */
+                    population[j].age = 0;
                 }
             }
             
             /* cálculo del fitness */
-            try
-            {
-                compute_fitness(population, indicators, bounds);
-            }
-            catch(const std::exception& e)
-            {
-                std::cerr << "[DANGER] Excepción a la hora de calcular el fitness: " << e.what() << '\n';
-                exit(1);
-            }
+            compute_fitness(population, indicators, bounds);
             
             #pragma omp single
             {
@@ -425,25 +438,15 @@ int main(int argc, char const *argv[])
                 catch(const std::exception& e)
                 {
                     std::cerr << "[DANGER] Excepción en la ordenación población: "  << e.what() << '\n';
-                    exit(1);
+                    i=-1;
                 }
             }
 
             #pragma omp single
             {
-                try
-                {
-                    std::copy(population.begin()+poblacion, population.end(), std::back_inserter(solutions)); /* guardado de la población mutada */
-                }
-                catch(const std::exception& e)
-                {
-                    std::cerr << "[DANGER] Excepción en el copiado de la población mutada: "  << e.what() << '\n';
-                    exit(1);
-                }
-            }
+                /* guardado de la población mutada */
+                std::copy(population.begin()+poblacion, population.end(), std::back_inserter(solutions)); 
 
-            #pragma omp single
-            {
                 /* actualizado de vectores de utilidad */
                 howmany[i].first = machos;
                 howmany[i].second = poblacion - machos;
@@ -466,7 +469,7 @@ int main(int argc, char const *argv[])
         dominated = false;
 
         /* control de elefante dominado */
-        #pragma omp parallel for shared(dominated) 
+        #pragma omp parallel for 
         for(int j=0; j<solutions.size(); ++j)
         {
             if(dominated) continue;
@@ -483,8 +486,6 @@ int main(int argc, char const *argv[])
             }
         }
     }
-
-   
 
     /* escritura en fichero */
     write_results();
