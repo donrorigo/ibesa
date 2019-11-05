@@ -417,7 +417,7 @@ int main(int argc, char const *argv[])
                     if(dominates(optimum_mutated[id_th][three_mutations(j, id_th)], population[j]) == 1) population[j]=optimum_mutated[id_th][0]; 
                     else
                     {
-                        random_mutation(population[j], population[j], 10*RANDOMMUTATION, id_th, random_vector, auxiliar_cdss); 
+                        random_mutation(population[j], population[j], 6*RANDOMMUTATION, id_th, random_vector, auxiliar_cdss); 
                         optimum_util++;
                     }
 
@@ -438,7 +438,21 @@ int main(int argc, char const *argv[])
                 catch(const std::exception& e)
                 {
                     std::cerr << "[DANGER] Excepción en la ordenación población: "  << e.what() << '\n';
+                    
+                    /* control de bug y reseteo de estructuras */
                     i=-1;
+                    solutions.clear();
+                    howmany.clear();
+                    oldest.clear();
+                    nonutility.clear();
+                    optimum_utility.clear();
+                    for(int n=0; n<poblacion; ++n)
+                    {
+                        howmany.insert(std::make_pair(n, std::pair<int,int>(0,0)));
+                        oldest.insert(std::make_pair(n,0));
+                        nonutility.insert(std::make_pair(n,0));
+                        optimum_utility.insert(std::make_pair(n,0));
+                    }
                 }
             }
 

@@ -23,9 +23,9 @@
 
 #define KAPPA 0.05 /* variable de escala */ 
 #define RHO 1.1 /* variable auxiliar de hipervolumen */
-#define OLD 5 /* numero de mutaciones donde se considera la solucion estancada */
-#define RANDOMMUTATION 2
-#define GREEDYMUTATION 45
+#define OLD 4 /* numero de mutaciones donde se considera la solucion estancada */
+#define RANDOMMUTATION 10
+#define GREEDYMUTATION 60
 
 
 using namespace std;
