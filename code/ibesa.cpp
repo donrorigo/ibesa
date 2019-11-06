@@ -414,7 +414,8 @@ int main(int argc, char const *argv[])
                 if(population[j].age >= OLD) 
                 {
                     old++;  
-                    if(dominates(optimum_mutated[id_th][three_mutations(j, id_th)], population[j]) == 1) population[j]=optimum_mutated[id_th][0]; 
+                    int iter;
+                    if(dominates(optimum_mutated[id_th][iter = three_mutations(j, id_th)], population[j]) == 1) population[j]=optimum_mutated[id_th][iter]; 
                     else
                     {
                         random_mutation(population[j], population[j], 6*RANDOMMUTATION, id_th, random_vector, auxiliar_cdss); 

@@ -23,7 +23,7 @@ int main(int argc, char const *argv[])
     float number = std::stof(argv[3]);
 
     std::vector<std::string> result;
-    ofstream output("NORMALIZADO: " + code + "_" +std::to_string(number));
+    ofstream output("NORMALIZADO: " + code);
     ifstream input;
     output << fixed;
     output << setprecision(15);
