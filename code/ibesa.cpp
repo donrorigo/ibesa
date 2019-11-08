@@ -418,7 +418,7 @@ int main(int argc, char const *argv[])
                     if(dominates(optimum_mutated[id_th][iter = three_mutations(j, id_th)], population[j]) == 1) population[j]=optimum_mutated[id_th][iter]; 
                     else
                     {
-                        random_mutation(population[j], population[j], 5*RANDOMMUTATION, id_th, random_vector, auxiliar_cdss); 
+                        random_mutation(population[j], population[j], 7*RANDOMMUTATION, id_th, random_vector, auxiliar_cdss); 
                         optimum_util++;
                     }
 
