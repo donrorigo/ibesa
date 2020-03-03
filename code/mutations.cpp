@@ -15,18 +15,21 @@ void random_mutation(single &a, single &result, double Pm, int th, vector<unsign
     string CDS;
     int size, c=0;
     
-    //printf("[*] Hilo %d: Mutación random.\n", th);
-
+    /* for each cds of the elefant a */
     for(int c=0; c<a.cds.size(); ++c)
     {
         CDS = a.cds[c]; 
+
+        // for each codon of the cds
         for(int i = 0; i<(int)CDS.size(); i+=3)
         {
             codon = CDS.substr(i,3);
             size = amino_codons[which_amino[codon]].size();
 
+            // if the prob is true and the number of synon codons is greater than itself
             if(rand_r(&random_vector[th]) % 100 < Pm && size > 1)
             {
+                // get a random codon, except the current codon
                 do{
                     random_codon = amino_codons[which_amino[codon]][rand_r(&random_vector[th])%size];
                     if(random_codon!=codon) new_cds += random_codon;
@@ -34,6 +37,7 @@ void random_mutation(single &a, single &result, double Pm, int th, vector<unsign
             }else new_cds += codon;
         }
 
+        // save the new cds and reset it
         result.cds[c] = (new_cds);
         new_cds = "";
     }
@@ -59,14 +63,17 @@ void cai_mutation(single & a, single & result, double Pm, int th, vector<unsigne
 {
     string codon, random_codon, new_cds = "", CDS = mCAI(a.cds).cds1, id = "";
 
-    //printf("[*] Hilo %d: Mutación avariciosa CAI.\n", th);
     try
     {
+        // for each codon on the cds returned by cai function
         for(int i = 0; i<(int)CDS.size(); i+=3)
         {
             codon = CDS.substr(i,3);   
+
+            // if the prob is true and the CAI of the codon is not equal to 1
             if(rand_r(&random_vector[th]) % 100 < Pm && amino_weights[codon] != 1)  
             {
+                // get a codon greater than the current one
                 do{
                     random_codon = amino_codons[which_amino[codon]][rand_r(&random_vector[th])%amino_codons[which_amino[codon]].size()];
                     if(amino_weights[random_codon] > amino_weights[codon])  new_cds += random_codon;                
@@ -76,8 +83,11 @@ void cai_mutation(single & a, single & result, double Pm, int th, vector<unsigne
             }      
         }
 
+        // update the current cds with the new one
         update_CDSs(a.cds, new_cds, CDS, auxiliar_cdss[th]);
+        // update the vector of the result elephant with the new one (with the new cds)
         update_vector(auxiliar_cdss[th], result.cds);
+        // compute the new attributes
         result.objetives[0] = (mCAI(result.cds).value);
         id += to_string(result.objetives[0]);
         result.objetives[1] = (mHD(result.cds).value);
@@ -90,7 +100,6 @@ void cai_mutation(single & a, single & result, double Pm, int th, vector<unsigne
         result.gender = a.gender;
         result.number = a.number;
         result.lastmutation = 1;
-
         
     }
     catch(const std::exception& e)
@@ -98,8 +107,6 @@ void cai_mutation(single & a, single & result, double Pm, int th, vector<unsigne
         std::cerr << "[DANGER] Mutación avariciosa CAI ha provocado la siguiente excepción: " << e.what() << '\n';
     }
     
-
-
     return;
 }
 
@@ -111,27 +118,42 @@ void mhd_mutation(single & a, single &result, double Pm, int th, vector<unsigned
     aim curr_HD, curr_mHD=aim_v, best_HD, best_mHD, new_HD, new_mHD;
     best_HD.value=-1;
     best_mHD.value=-1;
+
     try
     {
+        // for each codon of the CDS's returned by mHD function
         for(int i = 0; i<(int)aim_v.cds1.size(); i+=3) 
         {
             codon = aim_v.cds1.substr(i,3);
+            
+            // if the prob is true and the number of synon codos is greater than 1 
             if(rand_r(&random_vector[th]) % 100 < Pm &&  amino_codons[which_amino[codon]].size() > 1)
             {
                 curr_HD.value = HD(aim_v.cds1,aim_v.cds2);
 
+                // for each codon in synon codon (of the aminoacid)
                 for(string new_codon : amino_codons[which_amino[codon]])
                 {
                     if(new_codon != codon)
                     {
+                        // get the new cds (with the new codon)
                         new_CDS1 = change_CDS(aim_v.cds1, new_codon, i);
+
+                        // get the new HD value
                         new_HD.value = HD(new_CDS1, aim_v.cds2);
+
+                        // update the cds on auxiliar vector for compute the new mHD value
                         update_CDSs(a.cds, new_CDS1, aim_v.cds1, auxiliar_cdss[th]);
                         new_mHD = mHD(auxiliar_cdss[th]);
+
+                        // if the computed value is better than the current one and the best one, we update it
                         if(new_mHD.value > curr_mHD.value && new_mHD.value > best_mHD.value)
                         {
                             best_mHD = new_mHD;
                             best_codon = new_codon;
+
+                        // if the best mHD value is not levelup and this one continue being the same, 
+                        // we check if the computed HD value is better than the old one
                         }else if (best_mHD.value == -1 && new_mHD.value == curr_mHD.value && new_HD.value > curr_HD.value && new_HD.value > best_HD.value)
                         {
                             best_HD = new_HD;
@@ -140,6 +162,7 @@ void mhd_mutation(single & a, single &result, double Pm, int th, vector<unsigned
                     }
                 }
 
+                // if some value was updated, we update the cds of the result elephant
                 if(best_mHD.value != -1 || best_HD.value != -1){
                     new_CDS1 = change_CDS(aim_v.cds1, best_codon, i);
                     update_CDSs(a.cds, new_CDS1, aim_v.cds1, auxiliar_cdss[th]);
@@ -152,6 +175,7 @@ void mhd_mutation(single & a, single &result, double Pm, int th, vector<unsigned
 
         }
 
+        // update the result elephant attributes
         result.objetives[0] = (mCAI(result.cds).value);
         id += to_string(result.objetives[0]);
         result.objetives[1] = (mHD(result.cds).value);               
@@ -159,21 +183,18 @@ void mhd_mutation(single & a, single &result, double Pm, int th, vector<unsigned
         result.objetives[2] = (mlrcs(result.cds).value);
         id += to_string(result.objetives[2]);
         result.id = id;
+        result.fitness = 0;
+        result.age = a.age;
+        result.gender = a.gender;
+        result.number = a.number;
+        result.lastmutation = 2;
+
+        return;
     }
     catch(const std::exception& e)
     {
         std::cerr << "[DANGER] Mutación avariciosa MHD ha provocado la siguiente excepción: " << e.what() << '\n';
     }
-    
-    //printf("[*] Hilo %d: Mutación avariciosa MHD.\n", th);
-
-    result.fitness = 0;
-    result.age = a.age;
-    result.gender = a.gender;
-    result.number = a.number;
-    result.lastmutation = 2;
-
-    return;
 }
 
 void lrcs_mutation(single & a, single &result, double Pm, int th, vector<unsigned int> &random_vector, vector<vector<string> > &auxiliar_cdss)
@@ -185,30 +206,40 @@ void lrcs_mutation(single & a, single &result, double Pm, int th, vector<unsigne
 
     try
     {
+        // convert to uppercase the cds computed, for the successfully perform of the mutation
         for(char &character: curr_lrcs.cds1) cds1 += toupper(character);
         for(char &character: curr_lrcs.cds2) cds2 += toupper(character);  
         for(char &character: curr_lrcs.cds3) cds3 += toupper(character);   
 
         for(int i = 0; i<(int)curr_lrcs.cds1.size(); i+=3)
         {   
-            /* cálculo del índice donde se encuentra, el CDS y el codon correspondientes */
+            /* 
+             * logic to get the index and codon which we want to change, cause it can happend that 
+             * the index (returned by lrcs method) wouldn't be on the 3 multiple
+             */
             ret = ((curr_lrcs.index!=0) ? a.cds[0].length()%curr_lrcs.index : 0)%3;
             CDS = (curr_lrcs.index>=a.cds[0].length()) ? cds3 : cds2;
             index = (curr_lrcs.index>=a.cds[0].length()) ? curr_lrcs.index-(a.cds[0].length()) : curr_lrcs.index;
             codon = (ret!=0) ? CDS.substr((index+i-ret),3) : CDS.substr((index+i),3);
     
+            // if the prob is true and the number of synon codos is greater than itself
             if(rand_r(&random_vector[th]) % 100 < Pm && amino_codons[which_amino[codon]].size() > 1)
             {
+                // for each synon codon of the aminoacid computed
                 for(string random_codon : amino_codons[which_amino[codon]])
                 {
                     if(random_codon != codon)
                     {
-                        new_cds = ""; 
+                        // update the cds with the new one (with the new codon on the correct position)
                         new_cds = change_CDS(CDS, random_codon, ((ret!=0) ? (index+i-ret): (index+i)));
+                        // update the vector of CDSs with the new one
                         update_CDSs(a.cds, new_cds, CDS, auxiliar_cdss[th]);
+                        // compute the new metric
                         new_lrcs = mlrcs(auxiliar_cdss[th]);
+                        // if the new value computed is better than the old one
                         if(new_lrcs.value < curr_lrcs.value)
                         {
+                            // we update the vector of CDSs on the result elephant
                             update_vector(auxiliar_cdss[th], result.cds);
                             curr_lrcs.value = new_lrcs.value;    
                         }
@@ -218,6 +249,7 @@ void lrcs_mutation(single & a, single &result, double Pm, int th, vector<unsigne
 
         }
 
+        // update the attributes of the result elephant
         result.objetives[0] = (mCAI(result.cds).value);
         id += to_string(result.objetives[0]);
         result.objetives[1] = (mHD(result.cds).value);
@@ -225,24 +257,20 @@ void lrcs_mutation(single & a, single &result, double Pm, int th, vector<unsigne
         result.objetives[2] = curr_lrcs.value;
         id += to_string(result.objetives[2]);
         result.id = id;
+        result.fitness = 0;
+        result.age = a.age;
+        result.gender = a.gender;
+        result.number = a.number;
+        result.lastmutation = 3;
+        
+        return;
     }
     catch(const std::exception& e)
     {
         std::cerr << "[DANGER] Mutación avariciosa LRCS ha provocado la siguiente excepción: " << e.what() << '\n';
     }
     
-    //printf("[*] Hilo %d: Mutación avariciosa LRCS.\n", th);
-    
-    result.fitness = 0;
-    result.age = a.age;
-    result.gender = a.gender;
-    result.number = a.number;
-    result.lastmutation = 3;
-    
-    return;
 }
-
-                    
 
 void undue_cai_mutation(single &a, single &result, double Pm, int th, vector<unsigned int> &random_vector, vector<vector<string> > &auxiliar_cdss)
 {
