@@ -8,6 +8,8 @@
     encoding the same protein
 */
 
+#include <bits/stdc++.h> 
+
 using namespace std;
 
 map<char, vector<string> > amino_codons  = {
@@ -316,6 +318,7 @@ int main(int argc, char const *argv[])
         6. numero de CDSs a generar
 */
 {
+    
     cout << "[*] Proteína " << code << " iniciada." << endl;
 
     /* definición de la variable de generaciones*/
@@ -366,7 +369,16 @@ int main(int argc, char const *argv[])
 
     /* selección por elitismo (mayor fitness) */
     sorting_population();   
- 
+    
+    /* recuento del tiempo de ejecución */
+    time_t start, end; 
+
+    /*start*/
+    time(&start);
+
+    // unsync the I/O of C and C++. 
+    ios_base::sync_with_stdio(false); 
+
     /* inicio del algoritmo */
     #pragma omp parallel private(id_th) shared(machos, old, nonutil, optimum_util)
     {   
@@ -382,14 +394,13 @@ int main(int argc, char const *argv[])
 
             /* equilibrado de generos */
             #pragma omp for schedule(guided)
-            for(int j=0; j<poblacion; ++j)  
-            population[j].gender = (j<poblacion/2) ? false : true;
+            for(int j=0; j<poblacion; ++j) population[j].gender = (j<poblacion/2) ? false : true;
 
             /* mutaciones */
             #pragma omp for schedule(guided) reduction(+: nonutil)   
             for(int j=0; j<poblacion;j++)
             {
-                if (!population[j].gender) {
+                if (!population[j].gender) { /* mutacion de las hemmbras*/ 
                     greedy_mutations[rand_r(&random_vector[id_th])%3](population[j], population[j+poblacion], GREEDYMUTATION, id_th, random_vector, auxiliar_cdss);
                     
                     /* control de convergencia a una única solución */
@@ -398,7 +409,7 @@ int main(int argc, char const *argv[])
                         random_mutation(population[j], population[j+poblacion], 5*RANDOMMUTATION, id_th, random_vector, auxiliar_cdss); 
                         nonutil++;
                     }
-                }else{
+                }else{ /* mutacion de los machos */
                     random_mutation(population[j], population[j+poblacion], RANDOMMUTATION, id_th, random_vector, auxiliar_cdss);
                     machos++;
                 } 
@@ -411,12 +422,20 @@ int main(int argc, char const *argv[])
             #pragma omp for schedule(guided) reduction(+: old, optimum_util)
             for(int j=0; j<2*poblacion; ++j)  /* mutaciones óptimas */
             { 
+
                 if(population[j].age >= OLD) 
                 {
                     old++;  
                     int iter;
-                    if(dominates(optimum_mutated[id_th][iter = three_mutations(j, id_th)], population[j]) == 1) population[j]=optimum_mutated[id_th][iter]; 
-                    else
+
+                    #pragma omp critical
+                    solutions.push_back(population[j]);
+
+                    /* si el nuevo elefante mutado domina al anterior, se actualizará a super sayan*/
+                    if(dominates(optimum_mutated[id_th][iter = three_mutations(j, id_th)], population[j]) == 1) 
+                        population[j]=optimum_mutated[id_th][iter]; 
+                    
+                    else /* si no reestablecerá sus valores de forma muy aleatoria */
                     {
                         random_mutation(population[j], population[j], 7*RANDOMMUTATION, id_th, random_vector, auxiliar_cdss); 
                         optimum_util++;
@@ -435,43 +454,26 @@ int main(int argc, char const *argv[])
                 try
                 {
                     sorting_population();   /* selección por elitismo (mayor fitness) */
+                    /* guardado de la población mutada */
+                    std::copy(population.begin()+poblacion, population.end(), std::back_inserter(solutions)); 
+
+                    /* actualizado de vectores de utilidad */
+                    howmany[i].first = machos;
+                    howmany[i].second = poblacion - machos;
+                    oldest[i] = old;
+                    nonutility[i] = nonutil;
+                    optimum_utility[i] = optimum_util;
+
+                    /* aumento de generación */
+                    i++; 
                 }
                 catch(const std::exception& e)
                 {
                     std::cerr << "[DANGER] Excepción en la ordenación población: "  << e.what() << '\n';
-                    
-                    /* control de bug y reseteo de estructuras */
-                    i=-1;
-                    solutions.clear();
-                    howmany.clear();
-                    oldest.clear();
-                    nonutility.clear();
-                    optimum_utility.clear();
-                    for(int n=0; n<poblacion; ++n)
-                    {
-                        howmany.insert(std::make_pair(n, std::pair<int,int>(0,0)));
-                        oldest.insert(std::make_pair(n,0));
-                        nonutility.insert(std::make_pair(n,0));
-                        optimum_utility.insert(std::make_pair(n,0));
-                    }
+                    i=100000;
                 }
             }
 
-            #pragma omp single
-            {
-                /* guardado de la población mutada */
-                std::copy(population.begin()+poblacion, population.end(), std::back_inserter(solutions)); 
-
-                /* actualizado de vectores de utilidad */
-                howmany[i].first = machos;
-                howmany[i].second = poblacion - machos;
-                oldest[i] = old;
-                nonutility[i] = nonutil;
-                optimum_utility[i] = optimum_util;
-
-                /* aumento de generación */
-                i++; 
-            }
         }    
     }
 
@@ -505,8 +507,12 @@ int main(int argc, char const *argv[])
     /* escritura en fichero */
     write_results();
     export2utility();
-
+    
+    time(&end); 
     cout << "[*] Proteína " << code << " terminada.\n" << endl; 
+     cout << "Time taken by program is : " << fixed 
+         << double(end - start) << setprecision(5); 
+    cout << " sec " << endl; 
 
     return 0;
 }
