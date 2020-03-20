@@ -415,7 +415,10 @@ int main(int argc, char const *argv[])
                 } 
                 
                 /* aumento de edad: si el nuevo elefante no domina al anterior se aumenta la edad del anterior */
-                if((dominates(population[j], population[j+poblacion]) == 1)) population[j].age++;
+                if(!(dominates(population[j+poblacion], population[j]) == 1)) 
+                    population[j].age++;
+                else
+                    population[j].age=population[j+poblacion].age=0;
             } 
             
             /* reset de los elefantes viejos */
