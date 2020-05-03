@@ -70,6 +70,7 @@ void cai_mutation(single & a, single & result, double Pm, int th, vector<unsigne
         {
             codon = CDS.substr(i,3);   
 
+
             // if the prob is true and the CAI of the codon is not equal to 1
             if(rand_r(&random_vector[th]) % 100 < Pm && amino_weights[codon] != 1)  
             {
@@ -280,6 +281,8 @@ void undue_cai_mutation(single &a, single &result, double Pm, int th, vector<uns
     result.cds = a.cds;
     aim new_mHD, new_lrcs;
 
+    if(Pm < 2) Pm = 2;
+
     try
     {
         /* for each cds of the protein*/
@@ -292,6 +295,8 @@ void undue_cai_mutation(single &a, single &result, double Pm, int th, vector<uns
             {
                 codon = CDS.substr(i,3);
                 size = amino_codons[which_amino[codon]].size();
+
+
 
                 /* if the P() < Pm and the number of synonyms is greater than itself */
                 if(rand_r(&random_vector[th]) % 100 < Pm && amino_weights[codon] != 1)
@@ -352,6 +357,8 @@ void undue_mhd_mutation(single &a, single &result, double Pm, int th, vector<uns
     aim curr_HD, curr_mHD=aim_v, best_HD, best_mHD, new_HD, new_mHD;
     best_HD.value=-1;
     best_mHD.value=-1;
+
+    if(Pm < 2) Pm = 2;
 
     try
     {
@@ -436,6 +443,9 @@ void undue_lrcs_mutation(single &a, single &result, double Pm, int th, vector<un
     string codon, random_codon, new_cds, cds1, cds2, cds3, CDS, id = "";
     result.cds = a.cds;
     int ret, index;
+
+
+    if(Pm < 2) Pm = 2;
     
     try
     {
