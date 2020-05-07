@@ -295,9 +295,9 @@ int three_mutations(int j, int id_th)
 {
     double dcai, dmhd, dlrcs, dif;
     int iter;
-    optimum_mutations[0](population[j], optimum_mutated[id_th][0], rand_r(&random_vector[id_th])% 5 + GREEDYMUTATION, id_th, random_vector, auxiliar_cdss);
-    optimum_mutations[1](population[j], optimum_mutated[id_th][1], rand_r(&random_vector[id_th])% 5 + GREEDYMUTATION, id_th, random_vector, auxiliar_cdss);
-    optimum_mutations[2](population[j], optimum_mutated[id_th][2], rand_r(&random_vector[id_th])% 5 + GREEDYMUTATION, id_th, random_vector, auxiliar_cdss);
+    optimum_mutations[0](population[j], optimum_mutated[id_th][0], rand_r(&random_vector[id_th])% 5 + OPTIMUMMUTATION, id_th, random_vector, auxiliar_cdss);
+    optimum_mutations[1](population[j], optimum_mutated[id_th][1], rand_r(&random_vector[id_th])% 5 + OPTIMUMMUTATION, id_th, random_vector, auxiliar_cdss);
+    optimum_mutations[2](population[j], optimum_mutated[id_th][2], rand_r(&random_vector[id_th])% 5 + OPTIMUMMUTATION, id_th, random_vector, auxiliar_cdss);
     dcai = optimum_mutated[id_th][0].objetives[0] - population[j].objetives[0];
     dmhd = (optimum_mutated[id_th][1].objetives[1] - population[j].objetives[1])/0.4;
     dlrcs= optimum_mutated[id_th][2].objetives[2] - population[j].objetives[2];
