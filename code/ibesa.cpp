@@ -394,7 +394,7 @@ int main(int argc, char const *argv[])
 
             /* equilibrado de generos */
             #pragma omp for schedule(guided)
-            for(int j=0; j<poblacion; ++j) population[j].gender = (j<poblacion/2) ? false : true;
+            for(int j=0; j<poblacion; ++j) population[j].gender = !(j<poblacion/2);
 
             /* mutaciones */
             #pragma omp for schedule(guided) reduction(+: nonutil)   
