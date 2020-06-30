@@ -17,6 +17,23 @@ typedef struct single_st{
     double fitness;
     int age;
     string id;
+    int lastmutation;
+    int number; /* nº que lleva el elefante de la primera generación */
+    bool operator==(const single_st& a) { return (id==a.id) ? true : false; }
+    single_st& operator =(const single_st& a)
+    {
+        gender = a.gender;
+        cds = a.cds;
+        objetives[0] = a.objetives[0];
+        objetives[1] = a.objetives[1];
+        objetives[2] = a.objetives[2]; 
+        fitness = a.fitness;
+        age = a.age;
+        id = a.id;
+        lastmutation = a.lastmutation;
+        number = a.number;
+        return *this;
+    }
 } single; /* estructura de cada individuo */
 
 typedef struct range_st{

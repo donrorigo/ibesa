@@ -5,7 +5,7 @@
 #include <stdio.h>
 
 #define KAPPA 0.05 /* variable de escala */ 
-#define RHO 1.1 /* variable auxiliar de hioervolumen */
+#define RHO 2 /* variable auxiliar de hioervolumen */
 
 int dominates(single &a, single &b);
 void compute_fitness(vector<single>  &population,vector<vector<double> > &indicators, vector<range> &bounds); 
